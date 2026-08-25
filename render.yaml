@@ -1,0 +1,19 @@
+services:
+  # Backend API en Render (100% Gratis)
+  - type: web
+    name: heliox-api
+    env: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: NASA_API_KEY
+        value: DEMO_KEY
+      - key: APP_AUTHOR
+        value: JESUS BARRIOS
+      - key: ALLOWED_ORIGINS
+        value: "*"
