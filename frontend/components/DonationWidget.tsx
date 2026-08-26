@@ -22,7 +22,8 @@ export default function DonationWidget() {
   const accountType = process.env.NEXT_PUBLIC_BANK_TYPE || 'Ahorros'
   const accountNumber = process.env.NEXT_PUBLIC_BANK_ACCOUNT || '488474988372'
   const holderName = process.env.NEXT_PUBLIC_HOLDER_NAME || 'JESUS BARRIOS'
-  const paypalMe = process.env.NEXT_PUBLIC_PAYPAL_ME || 'https://paypal.me/jesusbarrios'
+  const paypalMe = process.env.NEXT_PUBLIC_PAYPAL_ME || 'https://paypal.me/JesusBarriosGiraldo'
+  const paypalUser = '@JesusBarriosGiraldo'
 
   const finalAmountCOP = customAmountCOP ? Number(customAmountCOP) : selectedAmountCOP
   const finalAmountUSD = customAmountUSD ? Number(customAmountUSD) : selectedAmountUSD
@@ -259,9 +260,15 @@ export default function DonationWidget() {
               transition={{ duration: 0.2 }}
               className="p-6 rounded-2xl bg-blue-950/30 border border-blue-500/30 text-center space-y-4"
             >
-              <div className="text-sm font-bold text-blue-300">
-                🌐 Donaciones Internacionales vía PayPal
+              <div className="flex items-center justify-between border-b border-blue-500/20 pb-3">
+                <span className="font-bold text-blue-300 flex items-center gap-2">
+                  🌐 PayPal Oficial (Internacional)
+                </span>
+                <span className="text-xs bg-blue-500/20 text-blue-200 px-2.5 py-0.5 rounded-full border border-blue-500/30 font-mono">
+                  {paypalUser}
+                </span>
               </div>
+
               <div className="flex flex-wrap justify-center gap-2">
                 {[5, 10, 25, 50, 100].map((amt) => (
                   <button
@@ -277,12 +284,26 @@ export default function DonationWidget() {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={handlePayPalRedirect}
-                className="w-full py-3 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
-              >
-                <span>🌐 Donar ${finalAmountUSD} USD en PayPal Oficial ({holderName}) ↗</span>
-              </button>
+
+              <div className="grid sm:grid-cols-2 gap-3 pt-1">
+                <button
+                  onClick={handlePayPalRedirect}
+                  className="w-full py-3 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
+                >
+                  <span>🌐 Abrir PayPal.Me ({paypalUser}) ↗</span>
+                </button>
+
+                <button
+                  onClick={() => copyToClipboard('https://paypal.me/JesusBarriosGiraldo', 'paypal_link')}
+                  className="w-full py-3 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-white/90 border border-white/10 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>{copiedField === 'paypal_link' ? '✅ ¡Enlace Copiado!' : '📋 Copiar Enlace PayPal'}</span>
+                </button>
+              </div>
+
+              <p className="text-xs text-white/40">
+                Titular verificado: <strong className="text-blue-300">{holderName}</strong> · Usuario: <strong className="text-white font-mono">{paypalUser}</strong>
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
     # Monetización - Google AdSense
-    ADSENSE_PUBLISHER_ID: str = "ca-pub-XXXXXXXXXXXXXXXXX"
+    ADSENSE_PUBLISHER_ID: str = "ca-pub-3600083129868122"
 
     # Datos Financieros Reales para Pagos y Donaciones (JESÚS BARRIOS)
     NEQUI_NUMBER: str = "3245884678"
@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     ACCOUNT_HOLDER_DOC: str = "C.C. Registrada"
 
     # Pasarelas de Pago Online
-    PAYPAL_ME_URL: str = "https://paypal.me/jesusbarrios"
+    PAYPAL_ME_URL: str = "https://paypal.me/JesusBarriosGiraldo"
     PAYPAL_QR_PATH: str = "/paypal_qr_jesus_barrios.jpg"
     PAYPAL_CLIENT_ID: str = "sb"  # 'sb' para sandbox o client_id de producción
     WOMPI_PUBLIC_KEY: str = "pub_test_XXXXXXXX"  # Wompi (Bancolombia) para PSE, Nequi y Tarjetas

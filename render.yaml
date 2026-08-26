@@ -38,4 +38,4 @@ services:
       - key: ACCOUNT_HOLDER_NAME
         value: "JESUS BARRIOS"
       - key: PAYPAL_ME_URL
-        value: "https://paypal.me/jesusbarrios"
+        value: "https://paypal.me/JesusBarriosGiraldo"
