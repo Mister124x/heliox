@@ -1,52 +1,16 @@
 # ☀️ HELIOX — Observatorio Solar en Tiempo Real
-
-> **"El sol no pide permiso para actuar. Nosotros tampoco."**
-> — JESÚS BARRIOS
-
-Plataforma profesional de monitoreo solar en tiempo real construida sobre APIs oficiales de NASA, NOAA y ESA.
-
-## Stack
-- **Backend:** FastAPI (Python 3.11+)
-- **Frontend:** Next.js 14 + TypeScript + Tailwind CSS
-- **Cache:** Redis
-- **DB:** PostgreSQL
-- **Scheduler:** Celery + Beat
-- **Deploy:** Cloudflare Pages + Railway/Render
-- **CDN:** Cloudflare
-
-## Inicio Rápido
-
-```bash
-# Clonar
-git clone <repo-url>
-cd heliox
-
-# Backend
-cd backend
-cp .env.example .env   # Agregar tus API keys
-pip install -r requirements.txt
-uvicorn main:app --reload
-
-# Frontend
-cd ../frontend
-npm install
-npm run dev
-
-# Todo con Docker
-docker-compose up -d
-```
-
-## APIs Integradas
-| Fuente | Datos |
-|--------|-------|
-| NASA DONKI | CME, Flares, Tormentas geomagnéticas |
-| NOAA SWPC | Kp-index, alertas en tiempo real |
-| Helioviewer | Imágenes solares SDO en vivo |
-| NOAA GOES | Flujo de rayos X |
-
-## Créditos
-**Creado por JESÚS BARRIOS** — 2026
-Todos los datos son de fuentes públicas oficiales.
+> **Monitoreo Satelital 24/7 de NASA · NOAA · ESA**  
+> **Fundador & Investigador Principal:** JESÚS BARRIOS  
+> **Sitio Oficial:** https://heliox.jesusbarrios.co
 
 ---
-*Para colaborar con el proyecto: Nequi / PayPal (ver widget en la web)*
+
+## 🛰️ Módulos en Vivo
+- **Visor Solar Espectroscópico:** 7 longitudes de onda (AIA 304Å, 171Å, 193Å, 211Å, 131Å, 1600Å, HMI)
+- **Matriz de Telemetría:** Índice Kp geomagnético, velocidad del viento solar (DSCOVR) y flujo de rayos X (GOES)
+- **Base de Datos de Tormentas:** Registro de Eyecciones de Masa Coronal (CME) y llamaradas M/X de NASA DONKI
+- **Hub de Investigación:** Documento fundacional de +15 páginas sobre el ciclo solar 25
+- **Monetización & Donaciones:** Nequi (`3245884678`), Bancolombia (`488474988372`) y PayPal Oficial de JESÚS BARRIOS
+
+---
+*Desplegado en Vercel & Render · 2026*
