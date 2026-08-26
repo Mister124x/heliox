@@ -1,14 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { useI18n } from '../lib/i18n'
 
 interface Product {
   id: string
   name: string
   category: string
   priceUSD: number
-  commissionEst: string
   rating: number
   badge: string
   description: string
@@ -22,7 +21,6 @@ const AFFILIATE_PRODUCTS: Product[] = [
     name: 'Celestron NexStar 8SE Solar Bundle',
     category: 'Telescopios Inteligentes',
     priceUSD: 1599,
-    commissionEst: '$110 - $160 USD por venta (8-10%)',
     rating: 4.9,
     badge: 'MÁS RECOMENDADO',
     description: 'Telescopio computarizado de 8 pulgadas con filtro solar certificado para observación de manchas solares y llamaradas.',
@@ -34,7 +32,6 @@ const AFFILIATE_PRODUCTS: Product[] = [
     name: 'ZWO ASI533MM Pro Solar/Planetary Camera',
     category: 'Astrofotografía Solar',
     priceUSD: 899,
-    commissionEst: '$70 - $90 USD por venta (8%)',
     rating: 4.8,
     badge: 'ALTA PRECISIÓN',
     description: 'Sensor monocromático enfriado ultra sensible para capturar la cromosfera solar en H-Alpha y prominencias.',
@@ -46,7 +43,6 @@ const AFFILIATE_PRODUCTS: Product[] = [
     name: 'Unistellar eVscope 2 Smart Solar Explorer',
     category: 'Óptica Digital Automatizada',
     priceUSD: 3499,
-    commissionEst: '$240 - $350 USD por venta (7-10%)',
     rating: 5.0,
     badge: 'GAMA ALTA',
     description: 'Telescopio inteligente con procesamiento de imagen en vivo y reconocimiento autónomo de campos celestes.',
@@ -58,7 +54,6 @@ const AFFILIATE_PRODUCTS: Product[] = [
     name: 'Filtro Solar Baader Planetarium AstroSolar 5.0',
     category: 'Seguridad y Filtros',
     priceUSD: 65,
-    commissionEst: '$6 - $10 USD por venta',
     rating: 4.9,
     badge: 'ACCESORIO VITAL',
     description: 'Filtro óptico de alta densidad para observación visual y fotográfica 100% segura del disco solar.',
@@ -68,30 +63,33 @@ const AFFILIATE_PRODUCTS: Product[] = [
 ]
 
 export default function AffiliateSection() {
+  const { t } = useI18n()
+
   return (
     <section className="py-12 px-4 relative">
       <div className="max-w-7xl mx-auto">
         {/* Cabecera */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="solar-badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mb-2">
-              🔬 Equipamiento Científico Recomendado
+            <div className="solar-badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 mb-2 text-xs inline-flex items-center gap-1.5">
+              <span>🔬</span>
+              <span>{t.equip_badge}</span>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight text-white">
-              Herramientas de Observación & Investigación Solar
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              {t.equip_title}
             </h2>
-            <p className="text-sm text-white/60 mt-1 max-w-2xl">
-              Cada adquisición a través de estos enlaces oficiales de astronomía genera una comisión directa que financia los servidores y la investigación de código abierto en <strong className="text-solar-400">HELIOX</strong>.
+            <p className="text-xs sm:text-sm text-white/60 mt-1 max-w-2xl">
+              {t.equip_description} <strong className="text-solar-400">HELIOX</strong>.
             </p>
           </div>
 
-          <div className="text-xs text-white/40 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
-            🤝 Afiliados Oficiales: Celestron · ZWO · High Point · Amazon Associates
+          <div className="text-xs text-white/50 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+            {t.equip_affiliates}
           </div>
         </div>
 
-        {/* Grilla de Productos de Alta Comisión */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Grilla de Productos */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {AFFILIATE_PRODUCTS.map((prod, idx) => (
             <motion.div
               key={prod.id}
@@ -99,10 +97,9 @@ export default function AffiliateSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="solar-card p-5 flex flex-col justify-between border border-white/10 hover:border-solar-500/50 bg-black/60 backdrop-blur-md group"
+              className="solar-card p-5 flex flex-col justify-between border border-white/10 hover:border-solar-500/50 bg-black/60 backdrop-blur-md group transition-all"
             >
               <div>
-                {/* Badge y Categoría */}
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-solar-400 bg-solar-500/10 px-2 py-0.5 rounded-md border border-solar-500/20">
                     {prod.badge}
@@ -110,15 +107,14 @@ export default function AffiliateSection() {
                   <span className="text-xs text-white/40">{prod.category}</span>
                 </div>
 
-                {/* Imagen/Placeholder Icon */}
                 <div className="w-full h-32 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-5xl mb-4 group-hover:scale-105 transition-transform duration-300">
                   {prod.imagePlaceholder}
                 </div>
 
-                {/* Título & Precio */}
-                <h3 className="font-bold text-base text-white group-hover:text-solar-300 transition-colors line-clamp-2 mb-1">
+                <h3 className="font-bold text-sm sm:text-base text-white group-hover:text-solar-300 transition-colors line-clamp-2 mb-1">
                   {prod.name}
                 </h3>
+
                 <div className="flex items-baseline gap-2 mb-2">
                   <span className="text-xl font-bold font-mono text-emerald-400">
                     ${prod.priceUSD.toLocaleString()} USD
@@ -135,7 +131,7 @@ export default function AffiliateSection() {
 
               <div>
                 <div className="text-[11px] text-solar-400/80 mb-3 bg-solar-500/5 p-2 rounded-lg border border-solar-500/10">
-                  💡 <em>Apoyo a la ciencia: comisión activa</em>
+                  {t.equip_support}
                 </div>
 
                 <a
@@ -144,7 +140,7 @@ export default function AffiliateSection() {
                   rel="noopener noreferrer"
                   className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-center block bg-solar-500 hover:bg-solar-400 text-black shadow-lg shadow-solar-500/20 transition-all"
                 >
-                  Ver Equipamiento Oficial →
+                  {t.equip_view}
                 </a>
               </div>
             </motion.div>
