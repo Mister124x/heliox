@@ -26,7 +26,7 @@ const AFFILIATE_PRODUCTS: Product[] = [
     badge: 'MÁS RECOMENDADO',
     description: 'Telescopio computarizado de 8 pulgadas con filtro solar certificado para observación de manchas solares y llamaradas.',
     amazonSearchQuery: 'Celestron NexStar 8SE Solar Telescope',
-    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Celestron+NexStar+8SE+Solar+filter&tag=jesusbarrios-20',
+    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Celestron+NexStar+8SE+Solar+filter&tag=jesusbarrios2-20',
     imagePlaceholder: '🔭',
   },
   {
@@ -38,7 +38,7 @@ const AFFILIATE_PRODUCTS: Product[] = [
     badge: 'ALTA PRECISIÓN',
     description: 'Sensor monocromático enfriado ultra sensible para capturar la cromosfera solar en H-Alpha y prominencias.',
     amazonSearchQuery: 'ZWO ASI533MM Pro solar camera',
-    amazonAffiliateUrl: 'https://www.amazon.com/s?k=ZWO+ASI533MM+Pro+camera&tag=jesusbarrios-20',
+    amazonAffiliateUrl: 'https://www.amazon.com/s?k=ZWO+ASI533MM+Pro+camera&tag=jesusbarrios2-20',
     imagePlaceholder: '📷',
   },
   {
@@ -50,7 +50,7 @@ const AFFILIATE_PRODUCTS: Product[] = [
     badge: 'GAMA ALTA',
     description: 'Telescopio inteligente con procesamiento de imagen en vivo y reconocimiento autónomo de campos celestes.',
     amazonSearchQuery: 'Unistellar eVscope 2 Smart Telescope',
-    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Unistellar+eVscope+2&tag=jesusbarrios-20',
+    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Unistellar+eVscope+2&tag=jesusbarrios2-20',
     imagePlaceholder: '🛰️',
   },
   {
@@ -62,7 +62,7 @@ const AFFILIATE_PRODUCTS: Product[] = [
     badge: 'ACCESORIO VITAL',
     description: 'Filtro óptico de alta densidad para observación visual y fotográfica 100% segura del disco solar.',
     amazonSearchQuery: 'Baader Solar Filter AstroSolar 5.0',
-    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Baader+Solar+Filter+AstroSolar+5.0&tag=jesusbarrios-20',
+    amazonAffiliateUrl: 'https://www.amazon.com/s?k=Baader+Solar+Filter+AstroSolar+5.0&tag=jesusbarrios2-20',
     imagePlaceholder: '🛡️',
   },
 ]
@@ -90,7 +90,7 @@ export default function AffiliateSection() {
           </div>
 
           <div className="text-xs text-white/50 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
-            🤝 Programa de Afiliados Oficial: Amazon Associates (Tag: <span className="text-solar-400 font-mono">jesusbarrios-20</span>) & Cotización Directa
+            🤝 Programa de Afiliados Oficial: Amazon Associates (Tag: <span className="text-solar-400 font-mono">jesusbarrios2-20</span>) & Cotización Directa
           </div>
         </div>
 
@@ -143,7 +143,7 @@ export default function AffiliateSection() {
 
                 <div className="space-y-2 mt-2">
                   <div className="text-[11px] text-solar-400/80 mb-2 bg-solar-500/5 p-2 rounded-lg border border-solar-500/10 flex items-center justify-between">
-                    <span>💡 Afiliado: <strong className="text-white">jesusbarrios-20</strong></span>
+                    <span>💡 Afiliado: <strong className="text-white">jesusbarrios2-20</strong></span>
                     <span className="text-emerald-400 font-mono">Activo ✓</span>
                   </div>
 
