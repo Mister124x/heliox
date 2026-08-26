@@ -15,7 +15,7 @@ export default function AdBanner({
   responsive = true,
   className = '',
 }: AdBannerProps) {
-  const publisherId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-3600083129888122'
+  const publisherId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-3600083129868122'
 
   useEffect(() => {
     try {
@@ -30,7 +30,7 @@ export default function AdBanner({
   return (
     <div className={`my-6 text-center overflow-hidden p-2 rounded-2xl bg-white/5 border border-dashed border-solar-500/20 ${className}`}>
       <div className="text-[10px] uppercase font-mono text-white/30 mb-1 tracking-widest">
-        Espacio Publicitario Oficial · Google AdSense (pub-3600083129888122)
+        Espacio Publicitario Oficial · Google AdSense (pub-3600083129868122)
       </div>
       <ins
         className="adsbygoogle"

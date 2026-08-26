@@ -4,12 +4,16 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import SocialVideoFeed from '../../components/SocialVideoFeed'
+import AdBanner from '../../components/AdBanner'
+import { useI18n, LanguageSelector } from '../../lib/i18n'
 
 export default function ReelsMediaPage() {
+  const { t } = useI18n()
   const [platform, setPlatform] = useState('tiktok')
   const [scriptData, setScriptData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const fetchScript = async (plat: string) => {
     setLoading(true)
@@ -40,120 +44,133 @@ export default function ReelsMediaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pb-24">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-md">
+    <div className="min-h-screen bg-black text-white pb-24 overflow-x-hidden">
+      {/* Navbar con Logo y selector de idioma */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">☀️</span>
-            <span className="text-xl font-bold tracking-tight">HELIOX</span>
-            <span className="text-xs text-pink-400 font-mono hidden sm:inline">MEDIA HUB</span>
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-solar-500/40 p-0.5 bg-solar-950/50">
+              <img src="/favicon.svg" alt="HELIOX" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-solar-400 to-white bg-clip-text text-transparent">
+              HELIOX
+            </span>
+            <span className="text-xs text-pink-400 font-mono hidden sm:inline bg-pink-500/10 px-2 py-0.5 rounded border border-pink-500/20">
+              MEDIA HUB
+            </span>
           </Link>
 
-          <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-5">
             <Link href="/" className="text-sm text-white/60 hover:text-white transition-colors">Inicio</Link>
-            <Link href="/dashboard" className="text-sm text-white/60 hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/storms" className="text-sm text-white/60 hover:text-white transition-colors">Tormentas</Link>
-            <Link href="/reels" className="text-sm text-solar-400 font-semibold">Reels & Media</Link>
-            <Link href="/analysis" className="text-sm text-white/60 hover:text-white transition-colors">Análisis</Link>
+            <Link href="/dashboard" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_dashboard}</Link>
+            <Link href="/storms" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_storms}</Link>
+            <Link href="/reels" className="text-sm text-solar-400 font-semibold">{t.nav_reels}</Link>
+            <Link href="/analysis" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_analysis}</Link>
+            <LanguageSelector />
+          </div>
+
+          <div className="flex md:hidden items-center gap-2">
+            <LanguageSelector />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">Inicio</Link>
+            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_dashboard}</Link>
+            <Link href="/storms" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_storms}</Link>
+            <Link href="/reels" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-solar-400 font-bold py-1">{t.nav_reels}</Link>
+            <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_analysis} (+15 Pág)</Link>
+          </div>
+        )}
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 pt-28">
-        {/* Encabezado */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="solar-badge bg-pink-500/20 text-pink-400 border border-pink-500/30 mb-3">
-            🎥 Centro de Medios, Videos Virales & Creadores
-          </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-3">
-            Videos, Reels & Contenido Solar Actual
-          </h1>
-          <p className="text-sm text-white/60">
-            Explora las publicaciones más destacadas en redes sociales y utiliza la inteligencia artificial de HELIOX para generar tus propios guiones con datos en tiempo real. Por <strong className="text-solar-400">JESÚS BARRIOS</strong>.
-          </p>
-        </div>
+        {/* Banner AdSense Superior */}
+        <AdBanner format="horizontal" />
 
-        {/* 1. Feed Curado de Videos de Redes Sociales */}
-        <div className="mb-14">
-          <SocialVideoFeed />
-        </div>
+        {/* Sección de Videos Reales */}
+        <SocialVideoFeed />
 
-        {/* 2. Generador de Guiones para tus Propias Redes */}
-        <div className="max-w-5xl mx-auto border-t border-white/10 pt-12">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              🎙️ Generador de Guiones para tus Redes Sociales
-            </h2>
-            <p className="text-xs md:text-sm text-white/60">
-              Genera un guion optimizado para hablar sobre la actividad solar de hoy en tus cuentas.
-            </p>
-          </div>
-
-          {/* Selector de Plataforma */}
-          <div className="flex justify-center gap-3 mb-8">
-            {[
-              { id: 'tiktok', label: '📱 TikTok (Alta Retención)', color: 'bg-gradient-to-r from-pink-600 to-rose-600' },
-              { id: 'instagram', label: '📸 Instagram Reels', color: 'bg-gradient-to-r from-purple-600 to-indigo-600' },
-              { id: 'youtube', label: '▶️ YouTube Shorts', color: 'bg-gradient-to-r from-red-600 to-orange-600' },
-            ].map((p) => (
-              <button
-                key={p.id}
-                onClick={() => setPlatform(p.id)}
-                className={`px-5 py-2.5 rounded-2xl text-xs md:text-sm font-bold transition-all ${
-                  platform === p.id ? `${p.color} text-white shadow-lg` : 'bg-white/5 text-white/60 hover:bg-white/10'
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Visualizador del Guión */}
-          <div className="solar-card p-6 md:p-8 bg-black/60 border border-white/10 rounded-3xl relative">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10 mb-6">
-              <div>
-                <span className="text-xs text-pink-400 font-mono uppercase tracking-wider">Hook de Viralidad (0-3s)</span>
-                <h2 className="text-xl md:text-2xl font-bold text-white mt-1">
-                  {scriptData?.title || 'Generando con datos de satélites...'}
-                </h2>
+        {/* Generador de Guiones para Creadores de Contenido */}
+        <section className="mt-12 bg-white/5 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="solar-badge bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-2 text-xs">
+                ⚡ Generador de Contenido Viral por IA
               </div>
-
-              <button
-                onClick={copyFullScript}
-                className="px-5 py-2.5 rounded-xl font-bold text-xs bg-solar-500 hover:bg-solar-400 text-black shadow-lg shadow-solar-500/20 transition-all flex items-center gap-2"
-              >
-                {copied ? '✅ ¡Guion Completo Copiado!' : '📋 Copiar Guion y Hashtags'}
-              </button>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Guion Optimizado para Creadores de Contenido Solar
+              </h2>
+              <p className="text-xs sm:text-sm text-white/60 mt-1">
+                Genera al instante libretos con tiempos para TikTok, YouTube Shorts e Instagram Reels basados en la telemetría actual.
+              </p>
             </div>
 
-            {/* Slides / Storyboard */}
-            <div className="space-y-4 mb-8">
-              <h3 className="text-xs font-mono uppercase text-white/50 tracking-wider">Storyboard de Grabación:</h3>
-              {scriptData?.slides?.map((slide: any, idx: number) => (
-                <div key={idx} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col md:flex-row gap-4 items-start">
-                  <div className="w-16 shrink-0 font-mono text-sm font-bold text-solar-400 bg-solar-500/10 px-2 py-1 rounded-lg text-center">
-                    {slide.second}s
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="text-sm font-bold text-white">🗣️ Voz en Off: <span className="font-normal text-white/90">{slide.voz}</span></div>
-                    <div className="text-xs text-white/50">🖼️ Elemento Visual: <span className="text-pink-300">{slide.visual}</span></div>
-                  </div>
-                </div>
+            <div className="flex items-center gap-2">
+              {['tiktok', 'youtube_shorts', 'instagram_reels'].map((plat) => (
+                <button
+                  key={plat}
+                  onClick={() => setPlatform(plat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    platform === plat
+                      ? 'bg-solar-500 text-black font-bold shadow-lg shadow-solar-500/20'
+                      : 'bg-white/5 text-white/60 hover:text-white'
+                  }`}
+                >
+                  {plat === 'tiktok' ? '📱 TikTok' : plat === 'youtube_shorts' ? '▶️ Shorts' : '📸 Reels'}
+                </button>
               ))}
             </div>
+          </div>
 
-            {/* Hashtags y Recomendación de Audio */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3">
-              <div className="text-xs text-white/60">
-                🎵 <strong>Audio de Fondo Sugerido:</strong> {scriptData?.music_suggestion}
+          {loading ? (
+            <div className="py-12 text-center text-white/40 font-mono text-sm">
+              <span className="inline-block animate-spin mr-2">🔄</span> Generando guion adaptado a telemetría en vivo...
+            </div>
+          ) : scriptData ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between bg-black/60 p-4 rounded-2xl border border-white/10">
+                <div>
+                  <div className="text-sm font-bold text-solar-300">{scriptData.title}</div>
+                  <div className="text-xs text-white/40 mt-0.5">Duración estimada: {scriptData.duration_seconds}s · {scriptData.target_audience}</div>
+                </div>
+                <button
+                  onClick={copyFullScript}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-solar-500 hover:bg-solar-400 text-black transition-all flex items-center gap-1.5"
+                >
+                  <span>{copied ? '✅ ¡Copiado!' : '📋 Copiar Guion Completo'}</span>
+                </button>
               </div>
-              <div className="text-xs text-solar-300 font-mono break-words leading-relaxed">
-                <strong>Hashtags de Alcance:</strong> {scriptData?.hashtags}
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {scriptData.slides?.map((slide: any, idx: number) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                    <div className="flex items-center justify-between text-xs text-solar-400 font-mono">
+                      <span>Slide {idx + 1}</span>
+                      <span>⏱️ {slide.second}s</span>
+                    </div>
+                    <div className="text-xs text-white/90 font-medium">🗣️ &quot;{slide.voz}&quot;</div>
+                    <div className="text-[11px] text-white/40 italic">🖼️ Visual: {slide.visual}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-3 bg-black/40 rounded-xl border border-white/5 text-xs font-mono text-solar-300">
+                {scriptData.hashtags}
               </div>
             </div>
-          </div>
-        </div>
+          ) : null}
+        </section>
+
+        {/* Banner AdSense Inferior */}
+        <AdBanner format="auto" />
       </main>
     </div>
   )
