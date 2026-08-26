@@ -3,7 +3,7 @@ import './globals.css'
 import { I18nProvider } from '../lib/i18n'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://heliox-git-main-jesus-barrios.vercel.app'),
+  metadataBase: new URL('https://heliox-observatory.vercel.app'),
   title: {
     default: 'HELIOX — Observatorio Solar en Tiempo Real | Tormentas Solares y Satélites NASA & NOAA',
     template: '%s | HELIOX',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     'solar storm live', 'solar flare tracker', 'space weather latinoamerica',
     'heliophysics', 'solar cycle 25', 'ciclo solar 25', 'alerta tormenta solar'
   ],
-  authors: [{ name: 'JESÚS BARRIOS', url: 'https://heliox-git-main-jesus-barrios.vercel.app' }],
+  authors: [{ name: 'JESÚS BARRIOS', url: 'https://heliox-observatory.vercel.app' }],
   creator: 'JESÚS BARRIOS',
   publisher: 'HELIOX Solar Observatory',
   applicationName: 'HELIOX',
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'es_CO',
     alternateLocale: ['en_US', 'pt_BR', 'fr_FR', 'de_DE', 'it_IT', 'ja_JP'],
-    url: 'https://heliox-git-main-jesus-barrios.vercel.app',
+    url: 'https://heliox-observatory.vercel.app',
     siteName: 'HELIOX — Observatorio Solar en Tiempo Real',
     title: 'HELIOX — Observatorio Solar en Tiempo Real | Datos Satelitales NASA & NOAA',
     description: 'Monitoreo del Sol 24/7 en tiempo real con datos de NASA y NOAA. Tormentas solares, llamaradas e imágenes satelitales SDO en vivo. Por JESÚS BARRIOS.',
@@ -72,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       '@type': 'ResearchProject',
       name: 'HELIOX Solar Observatory',
       alternateName: 'HELIOX Observatorio Solar',
-      url: 'https://heliox-git-main-jesus-barrios.vercel.app',
+      url: 'https://heliox-observatory.vercel.app',
       logo: 'https://heliox-git-main-jesus-barrios.vercel.app/favicon.svg',
       image: 'https://heliox-git-main-jesus-barrios.vercel.app/favicon.svg',
       founder: {
