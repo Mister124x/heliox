@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import StormAlert from '@/components/StormAlert'
+import StormAlert from '../../components/StormAlert'
 
 export default function StormsPage() {
   const [cmes, setCmes] = useState<any[]>([])

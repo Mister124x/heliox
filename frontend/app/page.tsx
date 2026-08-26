@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import SolarViewer from '@/components/SolarViewer'
-import KpGauge from '@/components/KpGauge'
-import StormAlert from '@/components/StormAlert'
-import DonationWidget from '@/components/DonationWidget'
-import AlertTicker from '@/components/AlertTicker'
-import AffiliateSection from '@/components/AffiliateSection'
+import SolarViewer from '../components/SolarViewer'
+import KpGauge from '../components/KpGauge'
+import StormAlert from '../components/StormAlert'
+import DonationWidget from '../components/DonationWidget'
+import AlertTicker from '../components/AlertTicker'
+import AffiliateSection from '../components/AffiliateSection'
 
 interface SummaryData {
   kp_index: { kp: number; severity: string; color: string; timestamp: string }

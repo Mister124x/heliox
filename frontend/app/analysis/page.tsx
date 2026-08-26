@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import DonationWidget from '@/components/DonationWidget'
+import DonationWidget from '../../components/DonationWidget'
 
 export default function AnalysisPage() {
   const [activeSection, setActiveSection] = useState('resumen')

@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import SolarViewer from '@/components/SolarViewer'
-import KpGauge from '@/components/KpGauge'
-import StormAlert from '@/components/StormAlert'
-import AlertTicker from '@/components/AlertTicker'
+import SolarViewer from '../../components/SolarViewer'
+import KpGauge from '../../components/KpGauge'
+import StormAlert from '../../components/StormAlert'
+import AlertTicker from '../../components/AlertTicker'
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<any>(null)
