@@ -9,6 +9,7 @@ import StormAlert from '../components/StormAlert'
 import DonationWidget from '../components/DonationWidget'
 import AlertTicker from '../components/AlertTicker'
 import AffiliateSection from '../components/AffiliateSection'
+import SocialVideoFeed from '../components/SocialVideoFeed'
 
 interface SummaryData {
   kp_index: { kp: number; severity: string; color: string; timestamp: string }
@@ -128,7 +129,7 @@ export default function HomePage() {
                 Tormentas Activas
               </Link>
               <Link href="/reels" className="solar-btn-outline border-pink-500/40 text-pink-300 hover:bg-pink-500/10">
-                🎬 Generar Reels Virales
+                🎬 Ver Reels & Shorts
               </Link>
             </div>
 
@@ -192,6 +193,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ─── Sección de Videos, Reels & Shorts de Redes Sociales ─────────── */}
+      <SocialVideoFeed />
 
       {/* ─── Sección de Afiliados y Equipamiento de Investigación ───────── */}
       <AffiliateSection />

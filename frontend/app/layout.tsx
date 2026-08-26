@@ -2,27 +2,29 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://heliox-git-main-jesus-barrios.vercel.app'),
   title: {
-    default: 'HELIOX — Observatorio Solar en Tiempo Real',
+    default: 'HELIOX — Observatorio Solar en Tiempo Real | Tormentas Solares y Satélites',
     template: '%s | HELIOX',
   },
   description:
-    'Monitoreo del sol 24/7 con datos en tiempo real de NASA, NOAA y ESA. Tormentas solares, llamaradas, índice Kp e imágenes del SDO. Por JESÚS BARRIOS.',
+    'Observatorio solar 24/7 en español con datos oficiales de NASA, NOAA y ESA. Monitoreo en vivo de tormentas geomagnéticas, llamaradas clase X, índice Kp e imágenes del satélite SDO. Creado por JESÚS BARRIOS.',
   keywords: [
     'sol en tiempo real', 'tormenta solar', 'llamarada solar', 'kp index',
     'NASA DONKI', 'NOAA SWPC', 'clima espacial', 'CME', 'aurora boreal',
-    'HELIOX', 'Jesús Barrios', 'observatorio solar',
+    'HELIOX', 'Jesús Barrios', 'observatorio solar', 'viento solar', 'SDO NASA',
   ],
-  authors: [{ name: 'JESÚS BARRIOS', url: 'https://heliox.jesusbarrios.co' }],
+  authors: [{ name: 'JESÚS BARRIOS', url: 'https://heliox-git-main-jesus-barrios.vercel.app' }],
   creator: 'JESÚS BARRIOS',
+  publisher: 'HELIOX Solar Observatory',
   openGraph: {
     type: 'website',
     locale: 'es_CO',
-    url: 'https://heliox.jesusbarrios.co',
-    siteName: 'HELIOX',
-    title: 'HELIOX — Observatorio Solar en Tiempo Real',
-    description: 'Datos solares en tiempo real de NASA y NOAA. Por JESÚS BARRIOS.',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'HELIOX Solar Observatory' }],
+    url: 'https://heliox-git-main-jesus-barrios.vercel.app',
+    siteName: 'HELIOX — Observatorio Solar en Tiempo Real',
+    title: 'HELIOX — Observatorio Solar en Tiempo Real | Datos Satelitales NASA & NOAA',
+    description: 'Monitoreo del Sol 24/7 en español. Tormentas solares, llamaradas e imágenes en directo. Por JESÚS BARRIOS.',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'HELIOX Solar Observatory por JESÚS BARRIOS' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -30,30 +32,58 @@ export const metadata: Metadata = {
     description: 'Sol en vivo 24/7. Datos NASA + NOAA. Por JESÚS BARRIOS.',
     images: ['/og-image.jpg'],
   },
-  robots: { index: true, follow: true },
-  viewport: 'width=device-width, initial-scale=1',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-XXXXXXXXXXXXXXXXX'
+
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ResearchProject',
+    name: 'HELIOX Solar Observatory',
+    url: 'https://heliox-git-main-jesus-barrios.vercel.app',
+    founder: {
+      '@type': 'Person',
+      name: 'JESUS BARRIOS',
+    },
+    description: 'Observatorio solar de acceso libre y monitoreo satelital en tiempo real para Latinoamérica.',
+    knowsAbout: ['Space Weather', 'Solar Flares', 'Coronal Mass Ejections', 'Geomagnetic Storms'],
+  }
 
   return (
     <html lang="es" className="dark">
       <head>
-        {/* Google AdSense */}
-        {adsenseId && adsenseId !== 'ca-pub-XXXXXXXXXXXXXXXXX' && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        )}
+        {/* Schema.org Structured Data para Google Search */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+
+        {/* Google AdSense Script Oficial */}
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
+          crossOrigin="anonymous"
+        />
+
         {/* Wompi Checkout Widget para Pagos con Tarjeta / PSE en Colombia */}
         <script
           type="text/javascript"
           src="https://checkout.wompi.co/widget.js"
           async
         />
+
         {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
