@@ -25,7 +25,7 @@ export default function AnalysisPage() {
   useEffect(() => {
     async function loadGovApis() {
       try {
-        const res = await fetch('/api/content/gov-data')
+        const res = await fetch('/api/storms/gov')
         const data = await res.json()
         setGovApiData(data)
       } catch (e) {
