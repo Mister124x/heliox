@@ -36,18 +36,26 @@ Google AdSense deposita mensualmente todos los ingresos generados por los banner
 
 ---
 
-## 3. 🌐 PayPal (Donaciones Internacionales con Código QR)
+## 3. 🌐 PayPal (Donaciones Internacionales)
 
-- **Imagen del QR:** Ya está integrada en el frontend público de la web (`/paypal_qr_jesus_barrios.jpg`).
+- **Handle Oficial:** `@JesusBarriosGiraldo`
+- **Enlace Directo:** `https://paypal.me/JesusBarriosGiraldo`
 - **Cómo pagan los usuarios:**
-  - Si visitan la web desde su celular o PC, pueden **escanear el código QR** directamente con la app de PayPal o la cámara de su teléfono.
-  - Al escanearlo, PayPal abre la pantalla de pago con el nombre **JESUS BARRIOS**.
+  - Los visitantes hacen clic en la pestaña "PayPal" en la web y pueden donar en dólares ($5, $10, $25, $50, $100 USD) o copiar el enlace directo `paypal.me/JesusBarriosGiraldo`.
 - **Retiro a Nequi / Bancolombia:**
-  - Puedes vincular tu cuenta de PayPal con tu **Nequi** desde la opción *"Servicios → PayPal"* en tu app de Nequi para traer tus dólares en PayPal directamente a tu Nequi en pesos colombianos en 2 minutos.
+  - Puedes vincular tu cuenta de PayPal con tu **Nequi** desde la opción *"Servicios → PayPal"* en tu app de Nequi para traer tus dólares de PayPal directamente a tu Nequi en pesos colombianos en 2 minutos.
 
 ---
 
-## 4. 💳 Tarjetas de Crédito / Débito & PSE (Wompi Bancolombia)
+## 4. 🛒 Amazon Associates (Comisiones de Equipos)
+
+- **Store ID Oficial:** `jesusbarrios2-20`
+- **Tasa de Comisión:** 1% a 10% por cada producto comprado en Amazon tras hacer clic en los enlaces de telescopios y accesorios.
+- **Cobro:** Depósito directo a cuenta de banco o tarjetas de regalo de Amazon.
+
+---
+
+## 5. 💳 Tarjetas de Crédito / Débito & PSE (Wompi Bancolombia)
 
 - **Qué es:** Wompi es la pasarela de pagos de Bancolombia que permite a los usuarios pagar con tarjeta o débito bancario.
 - **Configuración de abonos:**
