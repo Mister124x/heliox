@@ -1,19 +1,41 @@
 services:
-  # Backend API en Render (100% Gratis)
+  # =========================================================================
+  # ☀️ HELIOX API - Backend de Telemetría Solar (FastAPI)
+  # Creado por JESÚS BARRIOS
+  # Plan 100% Gratuito en Render
+  # =========================================================================
   - type: web
     name: heliox-api
     env: python
-    region: oregon
+    region: ohio
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
-      - key: NASA_API_KEY
-        value: DEMO_KEY
+      - key: APP_NAME
+        value: HELIOX
       - key: APP_AUTHOR
         value: JESUS BARRIOS
+      - key: NASA_API_KEY
+        value: DEMO_KEY
       - key: ALLOWED_ORIGINS
         value: "*"
+      - key: NEQUI_NUMBER
+        value: "3245884678"
+      - key: DAVIPLATA_NUMBER
+        value: "3245884678"
+      - key: BANK_NAME
+        value: "Bancolombia"
+      - key: BANK_ACCOUNT_TYPE
+        value: "Ahorros"
+      - key: BANK_ACCOUNT_NUMBER
+        value: "488474988372"
+      - key: ACCOUNT_HOLDER_NAME
+        value: "JESUS BARRIOS"
+      - key: PAYPAL_ME_URL
+        value: "https://paypal.me/jesusbarrios"
