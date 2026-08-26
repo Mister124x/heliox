@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import SolarViewer from '../../components/SolarViewer'
+import SolarGlobe3D from '../../components/SolarGlobe3D'
+import HackerPolymathMatrix from '../../components/HackerPolymathMatrix'
 import KpGauge from '../../components/KpGauge'
 import StormAlert from '../../components/StormAlert'
 import AlertTicker from '../../components/AlertTicker'
@@ -225,6 +227,24 @@ export default function DashboardPage() {
               Presión Dinámica: <strong className="text-orange-300 font-mono">{ramPressure_nPa} nPa</strong>
             </div>
           </div>
+        </div>
+
+        {/* ─── Visor Solar 3D Interactivo en 360 Grados ──────────────────── */}
+        <div className="my-8">
+          <SolarGlobe3D />
+        </div>
+
+        {/* ─── Matriz Heliofísica Cuántica Hacker-Polímata ─────────────────── */}
+        <div className="my-8">
+          <HackerPolymathMatrix
+            telemetry={{
+              speed_km_s: solarWind.speed_km_s || 438,
+              bz_nT: solarWind.bz_nT || -1.8,
+              bt_nT: solarWind.bt_nT || 4.9,
+              density_p_cm3: solarWind.density_p_cm3 || 5.2,
+              temperature_K: solarWind.temperature_K || 89000,
+            }}
+          />
         </div>
 
         {/* ─── Visor SDO y Radar Magnetosférico ───────────────────────────── */}

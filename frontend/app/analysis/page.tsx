@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import DonationWidget from '../../components/DonationWidget'
+import SolarGlobe3D from '../../components/SolarGlobe3D'
+import HackerPolymathMatrix from '../../components/HackerPolymathMatrix'
+import DeclassifiedDossier from '../../components/DeclassifiedDossier'
 import AdBanner from '../../components/AdBanner'
 import ViralShareBar from '../../components/ViralShareBar'
 import { useI18n, LanguageSelector } from '../../lib/i18n'
@@ -701,6 +704,19 @@ export default function AnalysisPage() {
             )
           })()}
         </div>
+
+        {/* ─── Visor Solar 3D Interactivo en 360 Grados ──────────────────── */}
+        <div className="my-10">
+          <SolarGlobe3D />
+        </div>
+
+        {/* ─── Matriz de Física Cuántica y Magnetohidrodinámica ──────────── */}
+        <div className="my-10">
+          <HackerPolymathMatrix />
+        </div>
+
+        {/* ─── Dossier Desclasificado Oficial ─────────────────────────────── */}
+        <DeclassifiedDossier />
 
         {/* Compartir + Ads + Donaciones */}
         <ViralShareBar />

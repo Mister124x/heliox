@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import SolarViewer from '../components/SolarViewer'
+import SolarGlobe3D from '../components/SolarGlobe3D'
+import HackerPolymathMatrix from '../components/HackerPolymathMatrix'
+import DeclassifiedDossier from '../components/DeclassifiedDossier'
 import KpGauge from '../components/KpGauge'
 import StormAlert from '../components/StormAlert'
 import DonationWidget from '../components/DonationWidget'
@@ -359,10 +362,31 @@ export default function HomePage() {
         <ViralShareBar />
       </div>
 
-      {/* ─── Sección de Videos, Reels & Shorts Educativos ─────────────────── */}
+      {/* ─── Visor Solar 3D Interactivo en 360 Grados ──────────────────── */}
+      <section className="px-4 py-8 max-w-7xl mx-auto">
+        <SolarGlobe3D />
+      </section>
+
+      {/* ─── Matriz Heliofísica Cuántica Hacker-Polímata ─────────────────── */}
+      <section className="px-4 py-8 max-w-7xl mx-auto">
+        <HackerPolymathMatrix
+          telemetry={{
+            speed_km_s: solarWind.speed_km_s || 438,
+            bz_nT: solarWind.bz_nT || -1.8,
+            bt_nT: solarWind.bt_nT || 4.9,
+            density_p_cm3: solarWind.density_p_cm3 || 5.2,
+            temperature_K: solarWind.temperature_K || 89000,
+          }}
+        />
+      </section>
+
+      {/* ─── Dossier de Archivos Desclasificados y Amenazas Reales ──────── */}
+      <DeclassifiedDossier />
+
+      {/* ─── Hub de Videos y Reels Virales (Auto-rotación 5s) ───────────── */}
       <SocialVideoFeed />
 
-      {/* ─── Banners de AdSense ─────────────────────────────────────────── */}
+      {/* ─── Banner AdSense ─────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 my-6">
         <AdBanner format="auto" />
       </div>

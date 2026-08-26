@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import StormAlert from '../../components/StormAlert'
+import DeclassifiedDossier from '../../components/DeclassifiedDossier'
+import HackerPolymathMatrix from '../../components/HackerPolymathMatrix'
 import ViralShareBar from '../../components/ViralShareBar'
 import AdBanner from '../../components/AdBanner'
 import { useI18n, LanguageSelector } from '../../lib/i18n'
@@ -251,6 +253,14 @@ export default function StormsPage() {
             )}
           </div>
         )}
+
+        {/* ─── Matriz de Física Cuántica y Magnetohidrodinámica ──────────── */}
+        <div className="my-8">
+          <HackerPolymathMatrix />
+        </div>
+
+        {/* ─── Dossier Desclasificado Oficial ─────────────────────────────── */}
+        <DeclassifiedDossier />
 
         <div className="my-8">
           <ViralShareBar />
