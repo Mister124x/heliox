@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'JESÚS BARRIOS', url: 'https://heliox-git-main-jesus-barrios.vercel.app' }],
   creator: 'JESÚS BARRIOS',
   publisher: 'HELIOX Solar Observatory',
+  other: {
+    'google-adsense-account': 'ca-pub-3600083129888122',
+  },
   openGraph: {
     type: 'website',
     locale: 'es_CO',
@@ -46,7 +49,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-3600083129888122'
+  const adsenseId = 'ca-pub-3600083129888122'
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -64,6 +67,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es" className="dark">
       <head>
+        {/* Meta Tag de Verificación de Cuenta Google AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-3600083129888122" />
+
         {/* Schema.org Structured Data para Google Search */}
         <script
           type="application/ld+json"
