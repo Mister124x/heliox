@@ -10,15 +10,16 @@ export async function GET() {
     if (Array.isArray(data) && data.length > 0) {
       const latest = data[data.length - 1]
       const flux = latest.flux || 1.2e-6
-      let classType = 'C1.2'
+      let classType = 'B1.0'
       if (flux >= 1e-4) classType = `X${(flux / 1e-4).toFixed(1)}`
       else if (flux >= 1e-5) classType = `M${(flux / 1e-5).toFixed(1)}`
       else if (flux >= 1e-6) classType = `C${(flux / 1e-6).toFixed(1)}`
+      else classType = `B${(flux / 1e-7).toFixed(1)}`
       
       flares.push({
         classType,
         beginTime: latest.time_tag || new Date().toISOString(),
-        sourceLocation: 'Región Activa Solar AR3664',
+        sourceLocation: 'Región Activa Solar AR3664/AR3685',
       })
     }
     return NextResponse.json({ flares })
