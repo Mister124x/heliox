@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import DonationWidget from '../../components/DonationWidget'
@@ -8,495 +8,704 @@ import AdBanner from '../../components/AdBanner'
 import ViralShareBar from '../../components/ViralShareBar'
 import { useI18n, LanguageSelector } from '../../lib/i18n'
 
-export default function AnalysisPage() {
-  const { t, lang } = useI18n()
-  const [activeTab, setActiveTab] = useState<'fundacional' | 'ciclo25' | 'carrington' | 'apis_gobierno' | 'geopolitica' | 'nasa_letter'>('fundacional')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [copiedCitation, setCopiedCitation] = useState(false)
-  const [govApiData, setGovApiData] = useState<any>(null)
-  const [loadingApi, setLoadingApi] = useState(true)
-  const [activeApiTab, setActiveApiTab] = useState<'noaa_solar_cycle' | 'noaa_goes_protons' | 'nasa_donki_alerts' | 'usgs_geomagnetism'>('noaa_solar_cycle')
+/* ─── Mapa de capítulos ─────────────────────────────────────────── */
+const CHAPTER_IDS = ['fundacional', 'ciclo25', 'carrington', 'apis_gobierno', 'geopolitica', 'nasa_letter'] as const
+type ChapterId = typeof CHAPTER_IDS[number]
 
-  const isEn = lang === 'en'
-  const isPt = lang === 'pt'
-  const isFr = lang === 'fr'
-  const isDe = lang === 'de'
+/* ─── Hook para datos de gobierno ──────────────────────────────── */
+function useGovData() {
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function loadGovApis() {
+    async function load() {
       try {
         const res = await fetch('/api/storms/gov')
-        if (res.ok) {
-          const data = await res.json()
-          setGovApiData(data)
-          setLoadingApi(false)
-          return
-        }
-      } catch (e) {}
-
-      // Fallback a APIs públicas directas de NOAA SWPC
+        if (res.ok) { setData(await res.json()); setLoading(false); return }
+      } catch {}
       try {
-        const [sunspotsRes, alertsRes] = await Promise.allSettled([
-          fetch('https://services.swpc.noaa.gov/json/solar-cycle/sunspots.json').then((r) => r.json()),
-          fetch('https://services.swpc.noaa.gov/products/alerts.json').then((r) => r.json()),
+        const [s, a] = await Promise.allSettled([
+          fetch('https://services.swpc.noaa.gov/json/solar-cycle/sunspots.json').then(r => r.json()),
+          fetch('https://services.swpc.noaa.gov/products/alerts.json').then(r => r.json()),
         ])
-
-        setGovApiData({
+        setData({
           success: true,
           timestamp: new Date().toISOString(),
           apis: {
             noaa_solar_cycle: {
-              name: 'NOAA Solar Cycle 25 Sunspot Progression',
+              name: 'NOAA Solar Cycle 25 – Sunspot Number',
               endpoint: 'https://services.swpc.noaa.gov/json/solar-cycle/sunspots.json',
-              recent_sunspots: sunspotsRes.status === 'fulfilled' && Array.isArray(sunspotsRes.value) ? sunspotsRes.value.slice(-12) : [],
+              recent_sunspots: s.status === 'fulfilled' && Array.isArray(s.value) ? s.value.slice(-6) : [],
             },
             noaa_goes_protons: {
-              name: 'GOES Primary Solar Energetic Protons (SEP)',
+              name: 'GOES Integral Solar Energetic Protons (SEP)',
               endpoint: 'https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json',
-              status: 'Real-Time Proton Channel Active',
+              status: '✅ Real-Time Proton Channel Active',
             },
             nasa_donki_alerts: {
-              name: 'NASA Space Weather Database Of Notifications (DONKI)',
+              name: 'NASA DONKI – Space Weather Alerts',
               endpoint: 'https://services.swpc.noaa.gov/products/alerts.json',
-              active_alerts: alertsRes.status === 'fulfilled' && Array.isArray(alertsRes.value) ? alertsRes.value.slice(0, 4) : [],
+              active_alerts: a.status === 'fulfilled' && Array.isArray(a.value) ? a.value.slice(0, 3) : [],
             },
             usgs_geomagnetism: {
-              name: 'USGS Geomagnetism National Program Feed',
+              name: 'USGS Geomagnetism National Program',
               endpoint: 'https://geomag.usgs.gov/ws/data/',
-              status: 'Active Terrestrial Monitoring Node',
+              status: '✅ Active Terrestrial Monitoring Node',
             },
           },
         })
-      } catch (err) {
-        console.error('Error en fallback client-side:', err)
-      } finally {
-        setLoadingApi(false)
-      }
+      } catch {} finally { setLoading(false) }
     }
-    loadGovApis()
+    load()
   }, [])
 
+  return { data, loading }
+}
+
+export default function AnalysisPage() {
+  const { t, lang } = useI18n()
+  const [activeTab, setActiveTab] = useState<ChapterId>('fundacional')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [copiedCitation, setCopiedCitation] = useState(false)
+  const [activeApiTab, setActiveApiTab] = useState<'noaa_solar_cycle' | 'noaa_goes_protons' | 'nasa_donki_alerts' | 'usgs_geomagnetism'>('noaa_solar_cycle')
+  const { data: govApiData, loading: loadingApi } = useGovData()
+
+  const isEn = lang === 'en'
+  const isPt = lang === 'pt'
+
   const copyCitation = () => {
-    const citation = `BARRIOS, Jesús. (2026). "El Sol Como Fuerza Geopolítica, Económica y Civilizatoria: Heliofísica Aplicada y Clima Espacial en Tiempo Real". HELIOX Solar Observatory. URL: https://heliox-observatory.vercel.app/analysis`
-    navigator.clipboard.writeText(citation)
+    navigator.clipboard.writeText(
+      `BARRIOS, Jesús. (2026). "El Sol Como Fuerza Geopolítica, Económica y Civilizatoria". HELIOX Solar Observatory. https://heliox-observatory.vercel.app/analysis`
+    )
     setCopiedCitation(true)
     setTimeout(() => setCopiedCitation(false), 2500)
   }
 
   const CHAPTERS = [
-    { id: 'fundacional', label: isEn ? '1. Manifesto & Mission' : isPt ? '1. Manifesto & Missão' : '1. Manifiesto & Misión', icon: '☀️', readTime: '3 min' },
-    { id: 'ciclo25', label: isEn ? '2. Solar Cycle 25 Maximum' : isPt ? '2. Máximo do Ciclo 25' : '2. Máximo del Ciclo Solar 25', icon: '📈', readTime: '4 min' },
-    { id: 'carrington', label: isEn ? '3. Carrington Event Risk ($2.6T)' : isPt ? '3. O Risco Carrington ($2.6T)' : '3. El Riesgo Carrington ($2.6T)', icon: '⚡', readTime: '4 min' },
-    { id: 'apis_gobierno', label: isEn ? '4. Public Govt APIs (NASA/NOAA/USGS)' : isPt ? '4. APIs Governamentais Abertas' : '4. APIs Libres del Gobierno (NASA/NOAA/USGS)', icon: '🏛️', readTime: '5 min' },
-    { id: 'geopolitica', label: isEn ? '5. Space Geopolitics' : isPt ? '5. Geopolítica Espacial' : '5. Perspectiva Geopolítica', icon: '🌐', readTime: '3 min' },
-    { id: 'nasa_letter', label: isEn ? '6. Open Letter to NASA' : isPt ? '6. Carta Aberta à NASA' : '6. Carta Oficial a la NASA', icon: '✉️', readTime: '2 min' },
+    { id: 'fundacional' as ChapterId, label: isEn ? '1. Manifesto & Mission' : isPt ? '1. Manifesto & Missão' : '1. Manifiesto & Misión', icon: '☀️', readTime: '3 min', color: 'from-orange-500 to-yellow-500' },
+    { id: 'ciclo25'    as ChapterId, label: isEn ? '2. Solar Cycle 25 Peak' : isPt ? '2. Máximo do Ciclo 25' : '2. Ciclo Solar 25', icon: '📈', readTime: '4 min', color: 'from-amber-500 to-orange-500' },
+    { id: 'carrington' as ChapterId, label: isEn ? '3. Carrington Risk ($2.6T)' : isPt ? '3. Risco Carrington' : '3. El Riesgo Carrington', icon: '⚡', readTime: '4 min', color: 'from-red-500 to-orange-500' },
+    { id: 'apis_gobierno' as ChapterId, label: isEn ? '4. Govt APIs (NASA/NOAA)' : isPt ? '4. APIs Governamentais' : '4. APIs del Gobierno', icon: '🏛️', readTime: '5 min', color: 'from-emerald-500 to-teal-500' },
+    { id: 'geopolitica' as ChapterId, label: isEn ? '5. Space Geopolitics' : isPt ? '5. Geopolítica Espacial' : '5. Perspectiva Geopolítica', icon: '🌐', readTime: '3 min', color: 'from-blue-500 to-indigo-500' },
+    { id: 'nasa_letter' as ChapterId, label: isEn ? '6. Open Letter to NASA' : isPt ? '6. Carta à NASA' : '6. Carta a la NASA', icon: '✉️', readTime: '2 min', color: 'from-purple-500 to-violet-500' },
   ]
 
+  const activeChapter = CHAPTERS.find(c => c.id === activeTab)!
+
   return (
-    <div className="min-h-screen bg-black text-white pb-24 overflow-x-hidden">
-      {/* Navbar con Logo y selector de idioma */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-md">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+
+      {/* ════════════════ NAVBAR ════════════════ */}
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-xl" style={{ background: 'rgba(0,0,0,0.85)' }}>
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-solar-500/40 p-0.5 bg-solar-950/50">
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-orange-500/40 bg-orange-950/50 p-0.5">
               <img src="/favicon.svg" alt="HELIOX" className="w-full h-full object-contain" />
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-solar-400 to-white bg-clip-text text-transparent">
+            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-orange-400 to-yellow-300 bg-clip-text text-transparent">
               HELIOX
             </span>
-            <span className="text-xs text-solar-400 font-mono hidden sm:inline bg-solar-500/10 px-2 py-0.5 rounded border border-solar-500/20">
-              RESEARCH & APIS
+            <span className="text-xs text-orange-400 font-mono hidden sm:inline bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30">
+              RESEARCH
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-5">
-            <Link href="/" className="text-sm text-white/60 hover:text-white transition-colors">{isEn ? 'Home' : 'Inicio'}</Link>
-            <Link href="/dashboard" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_dashboard}</Link>
-            <Link href="/storms" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_storms}</Link>
-            <Link href="/reels" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_reels}</Link>
-            <Link href="/analysis" className="text-sm text-solar-400 font-semibold">{t.nav_analysis}</Link>
+            {[['/', isEn ? 'Home' : 'Inicio'], ['/dashboard', t.nav_dashboard], ['/storms', t.nav_storms], ['/reels', t.nav_reels]].map(([href, label]) => (
+              <Link key={href} href={href} className="text-sm text-white/50 hover:text-white transition-colors">{label}</Link>
+            ))}
+            <Link href="/analysis" className="text-sm text-orange-400 font-bold">{t.nav_analysis}</Link>
             <LanguageSelector />
           </div>
 
           <div className="flex md:hidden items-center gap-2">
             <LanguageSelector />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white"
-            >
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-xl bg-white/5 border border-white/10">
               {mobileMenuOpen ? '✕' : '☰'}
             </button>
           </div>
         </div>
-
         {mobileMenuOpen && (
           <div className="md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{isEn ? 'Home' : 'Inicio'}</Link>
-            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_dashboard}</Link>
-            <Link href="/storms" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_storms}</Link>
-            <Link href="/reels" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_reels}</Link>
-            <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-solar-400 font-bold py-1">{t.nav_analysis} (+15 Pág)</Link>
+            {[['/', isEn ? 'Home' : 'Inicio'], ['/dashboard', t.nav_dashboard], ['/storms', t.nav_storms], ['/reels', t.nav_reels], ['/analysis', t.nav_analysis]].map(([href, label]) => (
+              <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{label}</Link>
+            ))}
           </div>
         )}
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 pt-28">
-        {/* Cabecera del Documento Maestro Estilo NASA Science & Stripe Docs */}
-        <div className="border-b border-white/10 pb-8 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <div className="solar-badge bg-solar-500/20 text-solar-400 border border-solar-500/30 text-xs inline-flex items-center gap-2">
-              <span>📄</span>
-              <span>{isEn ? 'Master Scientific Whitepaper & Government API Index v1.0' : 'Documento Científico Maestro e Índice de APIs Públicas v1.0'}</span>
-            </div>
+      {/* ════════════════ HERO HEADER — VISUAL IMPACTO TOTAL ════════════════ */}
+      <div className="relative pt-16 overflow-hidden">
+        {/* Fondo: gradiente espacial + glow solar animado */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 120% 70% at 50% 0%, #1a0a00 0%, #000 70%)' }} />
+          <div
+            className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl opacity-30"
+            style={{ background: 'radial-gradient(ellipse, #f78708 0%, #fda921 30%, transparent 70%)', animation: 'pulse 4s ease-in-out infinite' }}
+          />
+          {/* Estrellas decorativas */}
+          {[...Array(24)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                width: Math.random() > 0.7 ? '2px' : '1px',
+                height: Math.random() > 0.7 ? '2px' : '1px',
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                opacity: Math.random() * 0.6 + 0.2,
+                animation: `pulse ${2 + Math.random() * 3}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 3}s`,
+              }}
+            />
+          ))}
+        </div>
 
+        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-24">
+          {/* Badge superior */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-orange-500/40 bg-orange-500/10 text-orange-300 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+              📄 {isEn ? 'Master Scientific Whitepaper · Government API Index v1.0' : 'Documento Científico Maestro · Índice de APIs del Gobierno v1.0'}
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={copyCitation}
-                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/80 font-mono flex items-center gap-1.5 transition-all"
+                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 text-xs text-white/70 font-mono flex items-center gap-1.5 transition-all"
               >
-                <span>{copiedCitation ? '✅ ¡Cita Copiada!' : '📖 Copiar Cita Cita APA'}</span>
+                {copiedCitation ? '✅ ¡Copiado!' : '📖 Citar APA'}
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-3 py-1.5 rounded-xl bg-solar-500 hover:bg-solar-400 text-black text-xs font-bold font-mono transition-all"
+                className="px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black text-xs font-bold font-mono transition-all"
               >
-                🖨️ PDF / Print
+                🖨️ PDF
               </button>
             </div>
-          </div>
+          </motion.div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white leading-tight">
+          {/* Título principal */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] mb-6"
+          >
+            <span className="bg-gradient-to-r from-white via-orange-100 to-orange-400 bg-clip-text text-transparent">
+              {isEn ? 'The Sun as a' : isPt ? 'O Sol como uma' : 'El Sol como'}
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-orange-400 via-yellow-300 to-orange-500 bg-clip-text text-transparent">
+              {isEn ? 'Geopolitical Force' : isPt ? 'Força Geopolítica' : 'Fuerza Geopolítica'}
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-base sm:text-lg text-orange-200/80 font-medium max-w-3xl mb-8 leading-relaxed"
+          >
             {isEn
-              ? 'The Sun as a Geopolitical, Economic & Civilizational Force'
-              : 'El Sol Como Fuerza Geopolítica, Económica y Civilizatoria'}
-          </h1>
-          <p className="text-base sm:text-lg text-solar-300 font-semibold max-w-4xl mb-4 leading-relaxed">
-            {isEn
-              ? 'Applied Heliophysics, Real-time Satellite Telemetry, and Open Government API Architecture (NASA · NOAA · USGS · ESA)'
+              ? 'Applied Heliophysics, Real-time Satellite Telemetry & Open Government API Architecture (NASA · NOAA · USGS · ESA)'
               : 'Heliofísica Aplicada, Telemetría Satelital en Tiempo Real y Arquitectura de APIs Libres del Gobierno (NASA · NOAA · USGS · ESA)'}
-          </p>
+          </motion.p>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-white/50 pt-2 border-t border-white/5">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>{isEn ? 'Lead Author:' : 'Investigador Principal:'} <strong className="text-white">JESÚS BARRIOS</strong></span>
-            </div>
-            <span>•</span>
-            <span>{isEn ? 'Estimated Read Time:' : 'Tiempo de Lectura:'} <strong className="text-solar-400 font-mono">12 min</strong></span>
-            <span>•</span>
-            <span>{isEn ? 'Peer-Review License:' : 'Licencia:'} <strong className="text-white">Creative Commons BY 4.0 Open Science</strong></span>
-          </div>
+          {/* Meta-datos del paper */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-wrap gap-4 text-xs text-white/40"
+          >
+            {[
+              { icon: '✍️', label: isEn ? 'Lead Author' : 'Investigador', value: 'JESÚS BARRIOS', highlight: true },
+              { icon: '⏱️', label: isEn ? 'Read Time' : 'Lectura', value: '12 min', highlight: false },
+              { icon: '📅', label: isEn ? 'Published' : 'Publicado', value: '2026', highlight: false },
+              { icon: '🔓', label: isEn ? 'License' : 'Licencia', value: 'CC BY 4.0 Open Science', highlight: false },
+            ].map(m => (
+              <div key={m.label} className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5">
+                <span>{m.icon}</span>
+                <span className="text-white/40">{m.label}:</span>
+                <span className={m.highlight ? 'text-orange-400 font-bold' : 'text-white/70'}>{m.value}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Línea separadora con gradiente */}
+          <div className="mt-12 h-px w-full" style={{ background: 'linear-gradient(to right, transparent, rgba(247,135,8,0.5), transparent)' }} />
         </div>
+      </div>
 
-        {/* AdSense Banner Superior */}
+      {/* ════════════════ CONTENIDO PRINCIPAL ════════════════ */}
+      <main className="max-w-7xl mx-auto px-4 pb-24">
         <AdBanner format="horizontal" />
 
-        {/* Grid Principal: Navegación Estilo Documentación Oficial + Panel de Contenido */}
-        <div className="grid lg:grid-cols-4 gap-8 my-8">
-          
-          {/* Navegador Lateral de Capítulos (Sidebar Estilo Stripe/Next.js Docs) */}
-          <div className="lg:col-span-1 space-y-2">
-            <div className="text-xs font-bold uppercase tracking-wider text-solar-400 mb-3 px-2 flex items-center justify-between">
-              <span>{isEn ? 'Chapter Directory' : 'Índice de Capítulos'}</span>
-              <span className="font-mono text-[10px] bg-white/5 px-2 py-0.5 rounded border border-white/10 text-white/50">6 Docs</span>
+        <div className="mt-8 flex flex-col lg:flex-row gap-6">
+
+          {/* ── SIDEBAR DE CAPÍTULOS ── */}
+          <aside className="lg:w-72 shrink-0 space-y-2">
+            {/* Header sidebar */}
+            <div className="flex items-center justify-between px-1 mb-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-orange-400">
+                {isEn ? 'Chapter Directory' : '📚 Índice'}
+              </span>
+              <span className="text-[10px] font-mono bg-white/5 border border-white/10 text-white/40 px-2 py-0.5 rounded-full">
+                6 Docs
+              </span>
             </div>
 
-            <div className="space-y-1.5">
-              {CHAPTERS.map((ch) => {
+            {/* Botones de capítulos */}
+            <div className="space-y-1">
+              {CHAPTERS.map((ch, i) => {
                 const isActive = activeTab === ch.id
                 return (
-                  <button
+                  <motion.button
                     key={ch.id}
-                    onClick={() => setActiveTab(ch.id as any)}
-                    className={`w-full p-3 rounded-2xl text-left text-xs font-semibold transition-all flex items-center justify-between gap-2 border ${
+                    onClick={() => setActiveTab(ch.id)}
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full p-3 rounded-xl text-left text-xs font-semibold transition-all flex items-center gap-3 border relative overflow-hidden ${
                       isActive
-                        ? 'bg-solar-500 text-black border-solar-400 font-bold shadow-lg shadow-solar-500/20 scale-[1.02]'
-                        : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white'
+                        ? 'border-orange-500/60 text-black shadow-lg shadow-orange-500/20'
+                        : 'border-white/10 bg-white/[0.03] text-white/60 hover:text-white hover:border-white/20 hover:bg-white/[0.06]'
                     }`}
+                    style={isActive ? { background: `linear-gradient(135deg, #f78708, #fda921)` } : {}}
                   >
-                    <div className="flex items-center gap-2 truncate">
-                      <span>{ch.icon}</span>
-                      <span className="truncate">{ch.label}</span>
-                    </div>
-                    <span className={`text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded ${isActive ? 'bg-black/20 text-black' : 'text-white/40 bg-black/40'}`}>
+                    {isActive && <div className="absolute inset-0 opacity-20" style={{ background: 'radial-gradient(circle at 80% 50%, white, transparent)' }} />}
+                    <span className="relative text-base">{ch.icon}</span>
+                    <span className="relative flex-1 leading-snug">{ch.label}</span>
+                    <span className={`relative text-[10px] font-mono shrink-0 px-1.5 py-0.5 rounded ${isActive ? 'bg-black/20 text-black/70' : 'text-white/30'}`}>
                       {ch.readTime}
                     </span>
-                  </button>
+                  </motion.button>
                 )
               })}
             </div>
 
-            {/* Widget Informativo de APIs Libres Conectadas */}
-            <div className="mt-6 p-4 rounded-2xl bg-solar-950/40 border border-solar-500/20 text-xs space-y-2">
-              <div className="font-bold text-solar-400 flex items-center gap-1.5">
-                <span>📡</span>
-                <span>{isEn ? 'Connected Govt Feeds' : 'Feeds Oficiales Conectados'}</span>
+            {/* Widget APIs conectadas */}
+            <div className="mt-6 p-4 rounded-2xl border border-emerald-500/20 bg-emerald-950/20">
+              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{isEn ? 'Live Govt Feeds' : 'Feeds Activos'}</span>
               </div>
-              <ul className="space-y-1 text-white/60 font-mono text-[11px]">
-                <li className="flex items-center gap-1">✓ NASA DONKI Database</li>
-                <li className="flex items-center gap-1">✓ NOAA SWPC Telemetry</li>
-                <li className="flex items-center gap-1">✓ USGS Geomagnetism</li>
-                <li className="flex items-center gap-1">✓ ESA Helioviewer SDO</li>
+              <ul className="space-y-1.5 text-[11px] font-mono text-white/50">
+                {['NASA DONKI Database', 'NOAA SWPC Telemetry', 'USGS Geomagnetism', 'ESA Helioviewer SDO'].map(feed => (
+                  <li key={feed} className="flex items-center gap-1.5">
+                    <span className="text-emerald-400">✓</span> {feed}
+                  </li>
+                ))}
               </ul>
             </div>
-          </div>
 
-          {/* Panel de Lectura del Capítulo con Animación Interactiva */}
-          <div className="lg:col-span-3">
+            {/* Stat cards rápidas */}
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              {[
+                { label: isEn ? 'Cycle' : 'Ciclo', value: 'SC 25', color: '#f78708' },
+                { label: isEn ? 'Status' : 'Estado', value: isEn ? 'Peak' : 'Máximo', color: '#ef4444' },
+                { label: 'APIs', value: '5+', color: '#10b981' },
+                { label: isEn ? 'Languages' : 'Idiomas', value: '12', color: '#60a5fa' },
+              ].map(s => (
+                <div key={s.label} className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-center">
+                  <div className="text-lg font-black font-mono" style={{ color: s.color }}>{s.value}</div>
+                  <div className="text-[10px] text-white/40 mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </aside>
+
+          {/* ── PANEL DE CONTENIDO ── */}
+          <div className="flex-1 min-w-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3 }}
-                className="bg-black/80 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-2xl text-white/80 leading-relaxed space-y-6 text-sm sm:text-base shadow-2xl relative"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
               >
-
-                {/* CAPÍTULO 1: MANIFIESTO Y MISIÓN */}
-                {activeTab === 'fundacional' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>☀️</span> 1. {isEn ? 'Foundational Manifesto: Democratizing Space Weather' : 'Manifiesto y Misión: Democratizando el Clima Espacial'}
-                      </h2>
-                      <span className="text-xs font-mono text-solar-400 bg-solar-500/10 px-3 py-1 rounded-full border border-solar-500/20">
-                        {isEn ? 'Section 1.1' : 'Sección 1.1'}
-                      </span>
+                {/* Header del capítulo activo */}
+                <div
+                  className="rounded-2xl p-5 mb-5 relative overflow-hidden"
+                  style={{ background: `linear-gradient(135deg, ${activeChapter.color.replace('from-', '').replace(' to-', ', ')})` }}
+                >
+                  <div className="absolute inset-0 opacity-20" style={{ background: 'radial-gradient(circle at 90% 50%, white, transparent)' }} />
+                  <div className="relative flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{activeChapter.icon}</span>
+                      <div>
+                        <div className="text-xs font-mono text-white/70 mb-1">{isEn ? 'Chapter' : 'Capítulo'} {CHAPTERS.indexOf(activeChapter) + 1} · {activeChapter.readTime} {isEn ? 'read' : 'lectura'}</div>
+                        <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">{activeChapter.label}</h2>
+                      </div>
                     </div>
+                    <span className="hidden sm:block text-5xl opacity-10 font-black select-none">{CHAPTERS.indexOf(activeChapter) + 1}</span>
+                  </div>
+                </div>
 
-                    <p>
-                      Durante décadas, la información heliofísica de alta precisión ha permanecido confinada a instituciones anglosajonas (NASA, NOAA, ESA) con interfaces complejas y en idioma inglés. <strong>HELIOX</strong> nace con la misión inquebrantable de democratizar la telemetría solar para Latinoamérica y el mundo hispanohablante.
-                    </p>
+                {/* ─── CUERPO DEL CAPÍTULO ─── */}
+                <div className="rounded-2xl border border-white/10 p-6 sm:p-8 space-y-6 text-sm sm:text-base leading-relaxed text-white/75" style={{ background: 'rgba(255,255,255,0.02)' }}>
 
-                    {/* Tarjeta con Fórmula Interactiva de Física Solar */}
-                    <div className="grid sm:grid-cols-2 gap-4 my-6">
-                      <div className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-solar-500/40 transition-all">
-                        <div className="text-xs text-solar-400 font-mono mb-1">Ecuación de Inducción Magnética (Ley de Faraday)</div>
-                        <div className="text-xl font-mono font-bold text-white my-2">
-                          $$\mathcal{E} = -\frac{d\Phi_B}{dt}$$
+                  {/* ═══ CAPÍTULO 1 ═══ */}
+                  {activeTab === 'fundacional' && (
+                    <div className="space-y-6">
+                      <p>
+                        Durante décadas, la información heliofísica de alta precisión ha permanecido confinada a instituciones anglosajonas (NASA, NOAA, ESA) con interfaces complejas y en inglés. <strong className="text-white">HELIOX</strong> nace con la misión inquebrantable de <strong className="text-orange-300">democratizar la telemetría solar</strong> para Latinoamérica y el mundo hispanohablante.
+                      </p>
+
+                      {/* Tarjetas interactivas de fórmulas */}
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {[
+                          {
+                            label: 'Ley de Faraday — Inducción Magnética',
+                            formula: 'ℰ = −dΦ_B / dt',
+                            desc: 'Fuerza electromotriz inducida en redes eléctricas terrestres durante una tormenta geomagnética severa (G4-G5).',
+                            color: 'border-orange-500/30 bg-orange-500/5',
+                            badge: 'Electrodinámica Solar',
+                            badgeColor: 'text-orange-300 bg-orange-500/10 border-orange-500/20',
+                          },
+                          {
+                            label: 'Presión Dinámica — Ram Pressure',
+                            formula: 'P_ram = ρ · v²',
+                            desc: 'Comprime la magnetopausa terrestre cuando la velocidad v supera los 800 km/s durante CMEs extremas.',
+                            color: 'border-blue-500/30 bg-blue-500/5',
+                            badge: 'Física del Plasma',
+                            badgeColor: 'text-blue-300 bg-blue-500/10 border-blue-500/20',
+                          },
+                        ].map(f => (
+                          <motion.div
+                            key={f.label}
+                            whileHover={{ scale: 1.02, y: -2 }}
+                            className={`p-5 rounded-2xl border ${f.color} cursor-default transition-all`}
+                          >
+                            <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border mb-3 ${f.badgeColor}`}>
+                              {f.badge}
+                            </div>
+                            <div className="text-xs text-white/40 font-mono mb-2">{f.label}</div>
+                            <div className="text-2xl font-black font-mono text-white tracking-tight my-3 select-all">
+                              {f.formula}
+                            </div>
+                            <p className="text-xs text-white/50 leading-relaxed">{f.desc}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* Cita del autor */}
+                      <div className="relative p-5 rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(247,135,8,0.08), rgba(253,169,33,0.04))' }}>
+                        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-full" style={{ background: 'linear-gradient(to bottom, #f78708, #fda921)' }} />
+                        <blockquote className="pl-4">
+                          <p className="text-orange-200/90 font-semibold text-base sm:text-lg italic leading-relaxed mb-3">
+                            &ldquo;Comprender el Sol no es un lujo académico; es una medida de supervivencia para una civilización 100% electrodependiente.&rdquo;
+                          </p>
+                          <footer className="text-xs text-white/40 flex items-center gap-2">
+                            <span className="w-4 h-px bg-white/20" />
+                            JESÚS BARRIOS · Fundador e Investigador Principal, HELIOX Solar Observatory
+                          </footer>
+                        </blockquote>
+                      </div>
+
+                      {/* Badges de misión */}
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {[
+                          '🌐 12 Idiomas', '📡 5 APIs del Gobierno', '⚡ Tiempo Real', '🔓 Open Science',
+                          isEn ? '📱 Mobile First' : '📱 Optimizado Móvil',
+                        ].map(badge => (
+                          <span key={badge} className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ═══ CAPÍTULO 2 ═══ */}
+                  {activeTab === 'ciclo25' && (
+                    <div className="space-y-6">
+                      <p>
+                        El Ciclo Solar 25 ha <strong className="text-white">superado sistemáticamente</strong> todas las proyecciones iniciales del panel conjunto NASA/NOAA. La tasa de manchas solares (SSN) y la frecuencia de llamaradas de clase X demuestran que nos encontramos ante uno de los ciclos solares más intensos de los últimos 20 años.
+                      </p>
+
+                      {/* Timeline de hitos */}
+                      <div className="space-y-4">
+                        <h4 className="font-bold text-white text-sm uppercase tracking-wider">
+                          {isEn ? 'Key Milestones' : 'Hitos Clave del Ciclo 25'}
+                        </h4>
+                        {[
+                          { year: '2019', event: isEn ? 'Cycle 25 officially begins' : 'El Ciclo 25 inicia oficialmente', tag: isEn ? 'Start' : 'Inicio', color: 'bg-emerald-500' },
+                          { year: '2023', event: isEn ? 'Exceeds NASA/NOAA initial projections' : 'Supera proyecciones iniciales NASA/NOAA', tag: isEn ? 'Critical' : 'Crítico', color: 'bg-amber-500' },
+                          { year: 'May 2024', event: isEn ? 'G5 Storm AR3664 — Tropical auroras' : 'Tormenta G5 AR3664 — Auroras en latitudes tropicales', tag: 'G5', color: 'bg-purple-500' },
+                          { year: '2025–26', event: isEn ? 'Solar maximum window — Extreme CMEs expected' : 'Ventana del máximo solar — CMEs extremas esperadas', tag: isEn ? 'PEAK' : 'MÁXIMO', color: 'bg-red-500' },
+                        ].map(m => (
+                          <motion.div
+                            key={m.year}
+                            whileHover={{ x: 4 }}
+                            className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all"
+                          >
+                            <div className="text-right shrink-0 w-20">
+                              <div className="text-xs text-white/40 font-mono leading-tight">{m.year}</div>
+                            </div>
+                            <div className="flex-1 flex items-start gap-3">
+                              <div className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: m.color.replace('bg-', '').replace('-500', '') === 'emerald' ? '#10b981' : m.color.replace('bg-', '').replace('-500', '') === 'amber' ? '#f59e0b' : m.color.replace('bg-', '').replace('-500', '') === 'purple' ? '#a855f7' : '#ef4444' }} />
+                              <div className="text-sm text-white/70">{m.event}</div>
+                            </div>
+                            <span className={`text-[10px] font-black shrink-0 px-2 py-0.5 rounded-full text-white ${m.color}`}>{m.tag}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-200/80 text-xs sm:text-sm">
+                        🚨 <strong>{isEn ? 'Critical Window 2025–2026:' : 'Ventana Crítica 2025–2026:'}</strong> {isEn ? 'Super-fast CMEs (>2,200 km/s) with direct Earth-facing trajectories are expected during the solar maximum peak.' : 'CMEs súper rápidas (>2,200 km/s) con dirección directa al hemisferio nocturno terrestre son esperadas durante el pico del máximo solar.'}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ═══ CAPÍTULO 3 ═══ */}
+                  {activeTab === 'carrington' && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 p-4 rounded-2xl bg-red-950/40 border border-red-500/30">
+                        <span className="text-4xl">⚡</span>
+                        <div>
+                          <div className="text-xs text-red-400 font-mono font-bold mb-1">ESCENARIO CATASTRÓFICO</div>
+                          <div className="text-2xl font-black text-white">$2.6 Trillones USD</div>
+                          <div className="text-xs text-white/50">{isEn ? 'Estimated economic impact of a modern Carrington-level event' : 'Impacto económico estimado de un evento Carrington moderno'}</div>
                         </div>
-                        <p className="text-xs text-white/50">
-                          Representa la fuerza electromotriz inducida en redes eléctricas terrestres durante una tormenta geomagnética severa.
+                      </div>
+
+                      <p>
+                        En septiembre de <strong className="text-white">1859</strong>, el Evento Carrington indujo corrientes electromagnéticas extremas en líneas de telégrafo que provocaron incendios en estaciones de todo el mundo. Hoy, un evento similar impactaría transformadores de alta tensión a escala continental.
+                      </p>
+
+                      <div className="grid sm:grid-cols-3 gap-3">
+                        {[
+                          { icon: '⚡', title: isEn ? 'Power Grids' : 'Redes Eléctricas', desc: isEn ? 'EHV transformers destroyed, 4-10 years to replace' : 'Transformadores EHV destruidos, 4-10 años de reemplazo', color: 'border-red-500/20 bg-red-500/5' },
+                          { icon: '📡', title: isEn ? 'Satellites' : 'Satélites', desc: isEn ? 'GPS, Starlink, telecom orbital decay acceleration' : 'GPS, Starlink, telecom — aceleración de reentrada orbital', color: 'border-orange-500/20 bg-orange-500/5' },
+                          { icon: '🌐', title: isEn ? 'Internet' : 'Internet', desc: isEn ? 'Undersea cable failure due to GIC currents' : 'Falla de cables submarinos por corrientes GIC', color: 'border-amber-500/20 bg-amber-500/5' },
+                        ].map(item => (
+                          <motion.div key={item.title} whileHover={{ y: -3 }} className={`p-4 rounded-xl border ${item.color} transition-all`}>
+                            <span className="text-2xl mb-2 block">{item.icon}</span>
+                            <h5 className="font-bold text-white text-sm mb-1">{item.title}</h5>
+                            <p className="text-xs text-white/50">{item.desc}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs sm:text-sm text-white/70">
+                        📚 <strong className="text-white">Fuente:</strong> {isEn ? 'National Academy of Sciences (NAS), "Severe Space Weather Events – Understanding Societal and Economic Impacts" (2008).' : 'Academia Nacional de Ciencias de EE.UU., "Severe Space Weather Events – Understanding Societal and Economic Impacts" (2008).'}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ═══ CAPÍTULO 4: EXPLORADOR INTERACTIVO DE APIS DEL GOBIERNO ═══ */}
+                  {activeTab === 'apis_gobierno' && (
+                    <div className="space-y-5">
+                      <p className="text-sm text-white/60">
+                        {isEn
+                          ? 'Explore and test official US/EU government telemetry endpoints in real time — all consumed by HELIOX:'
+                          : 'Explora y prueba en tiempo real los endpoints gubernamentales oficiales consumidos por HELIOX:'}
+                      </p>
+
+                      {/* Tabs de selección de API — estilo terminal */}
+                      <div className="flex flex-wrap gap-2">
+                        {([
+                          { id: 'noaa_solar_cycle' as const, label: '☀️ NOAA Solar Cycle 25', agency: 'NOAA' },
+                          { id: 'noaa_goes_protons' as const, label: '⚡ GOES Protons (SEP)', agency: 'NOAA' },
+                          { id: 'nasa_donki_alerts' as const, label: '🚨 NASA DONKI Alerts', agency: 'NASA' },
+                          { id: 'usgs_geomagnetism' as const, label: '🌍 USGS Geomagnetism', agency: 'USGS' },
+                        ] as const).map(tab => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveApiTab(tab.id)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition-all ${
+                              activeApiTab === tab.id
+                                ? 'bg-emerald-500 text-black border-emerald-400 shadow-lg shadow-emerald-500/20'
+                                : 'bg-white/5 text-white/50 border-white/10 hover:text-white hover:border-white/20'
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Terminal de respuesta JSON */}
+                      <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                        {/* Barra superior tipo IDE */}
+                        <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-red-500 opacity-70" />
+                            <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-70" />
+                            <div className="w-3 h-3 rounded-full bg-green-500 opacity-70" />
+                            <span className="ml-3 text-[11px] font-mono text-white/40 truncate max-w-xs">
+                              {govApiData?.apis?.[activeApiTab]?.endpoint || 'Conectando al servidor gubernamental...'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full animate-pulse">
+                              ● LIVE
+                            </span>
+                            <span className="text-[10px] font-mono text-white/30 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                              HTTP 200 · Public Access
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Contenido JSON */}
+                        <div className="p-5 font-mono text-xs bg-black min-h-[200px] max-h-72 overflow-y-auto">
+                          {loadingApi ? (
+                            <div className="flex items-center gap-3 text-emerald-400/70 h-32 justify-center">
+                              <div className="w-4 h-4 border-2 border-emerald-400/50 border-t-emerald-400 rounded-full animate-spin" />
+                              <span>{isEn ? 'Querying government server...' : 'Consultando servidor gubernamental...'}</span>
+                            </div>
+                          ) : (
+                            <pre className="text-emerald-300/80 leading-relaxed whitespace-pre-wrap">
+                              <span className="text-blue-400">{'// '}</span>
+                              <span className="text-white/30">{govApiData?.apis?.[activeApiTab]?.name}</span>
+                              {'\n\n'}
+                              {JSON.stringify(govApiData?.apis?.[activeApiTab] || {}, null, 2)
+                                .replace(/"([^"]+)":/g, '"$1":')
+                              }
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Grid de APIs adicionales */}
+                      <div className="grid sm:grid-cols-2 gap-3 pt-2">
+                        {[
+                          { icon: '🛰️', name: 'NASA SDO AIA', desc: isEn ? 'Solar Dynamics Observatory image pipeline (171Å, 304Å, 193Å)' : 'Pipeline de imágenes SDO (171Å, 304Å, 193Å)', url: 'https://sdo.gsfc.nasa.gov', color: 'text-blue-300' },
+                          { icon: '🌊', name: 'ESA Helioviewer', desc: isEn ? 'Multi-wavelength solar image feed (SOHO/LASCO C2/C3)' : 'Feed de imágenes solares multiespectral (SOHO/LASCO C2/C3)', url: 'https://helioviewer.org', color: 'text-purple-300' },
+                          { icon: '🧲', name: 'NOAA K-Index', desc: isEn ? 'Planetary Kp geomagnetic activity index (3-hour resolution)' : 'Índice Kp geomagnético planetario (resolución 3 horas)', url: 'https://services.swpc.noaa.gov', color: 'text-amber-300' },
+                          { icon: '🔭', name: 'SOHO LASCO', desc: isEn ? 'CME real-time coronagraph imagery from L1 Lagrange point' : 'Imágenes coronagráficas de CMEs en tiempo real desde L1', url: 'https://soho.nascom.nasa.gov', color: 'text-green-300' },
+                        ].map(api => (
+                          <a
+                            key={api.name}
+                            href={api.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] transition-all"
+                          >
+                            <span className="text-xl shrink-0">{api.icon}</span>
+                            <div>
+                              <div className={`text-xs font-bold font-mono ${api.color} group-hover:underline`}>{api.name} ↗</div>
+                              <div className="text-[11px] text-white/40 mt-0.5">{api.desc}</div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ═══ CAPÍTULO 5 ═══ */}
+                  {activeTab === 'geopolitica' && (
+                    <div className="space-y-6">
+                      <p>
+                        La soberanía espacial de las naciones emergentes depende de su capacidad para <strong className="text-white">predecir anomalías causadas por el viento solar</strong> en sus constelaciones de satélites de observación terrestre y comunicaciones.
+                      </p>
+
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {[
+                          { flag: '🇨🇴', country: isEn ? 'Colombia' : 'Colombia', relevance: isEn ? 'Equatorial ionosphere studies, Latacunga Space Agency (FAC)' : 'Estudios ionosféricos en el ecuador, Agencia Espacial FAC' },
+                          { flag: '🇧🇷', country: isEn ? 'Brazil' : 'Brasil', relevance: isEn ? 'INPE solar monitoring, Amazon deforestation radar (SIRIUS)' : 'INPE monitoreo solar, radar Amazónico (SIRIUS)' },
+                          { flag: '🌎', country: isEn ? 'Latin America' : 'Latinoamérica', relevance: isEn ? '12 active observatories with limited solar weather access' : '12 observatorios activos con acceso limitado al clima espacial' },
+                          { flag: '🇺🇳', country: 'UN / UNOOSA', relevance: isEn ? 'Space weather international treaty framework (Sendai)' : 'Marco de tratado internacional de clima espacial (Sendai)' },
+                        ].map(c => (
+                          <div key={c.country} className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/10">
+                            <span className="text-3xl shrink-0">{c.flag}</span>
+                            <div>
+                              <div className="font-bold text-white text-sm">{c.country}</div>
+                              <div className="text-xs text-white/50 mt-0.5">{c.relevance}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                        <p className="text-sm text-white/70">
+                          <strong className="text-blue-300">HELIOX</strong> {isEn
+                            ? 'provides a sovereign and independent real-time processing layer, allowing researchers, grid operators, and citizens to be alerted to severe ionospheric disturbances without relying exclusively on closed government portals.'
+                            : 'provee una capa soberana e independiente de procesamiento en tiempo real, permitiendo a investigadores, operadores de redes y ciudadanos estar alerta ante perturbaciones ionosféricas severas sin depender exclusivamente de portales gubernamentales cerrados.'}
                         </p>
                       </div>
+                    </div>
+                  )}
 
-                      <div className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-solar-500/40 transition-all">
-                        <div className="text-xs text-corona-400 font-mono mb-1">Presión Dinámica del Viento Solar (Ram Pressure)</div>
-                        <div className="text-xl font-mono font-bold text-white my-2">
-                          $$P_{ram} = \rho \cdot v^2$$
+                  {/* ═══ CAPÍTULO 6 ═══ */}
+                  {activeTab === 'nasa_letter' && (
+                    <div className="space-y-6">
+                      {/* Encabezado de carta oficial */}
+                      <div className="flex items-center gap-4 p-4 rounded-xl border border-purple-500/20 bg-purple-500/5">
+                        <span className="text-4xl">✉️</span>
+                        <div>
+                          <div className="text-xs font-mono text-purple-400 font-bold">OFFICIAL DOCUMENT</div>
+                          <div className="text-sm text-white font-bold">{isEn ? 'Open Letter to NASA & Space Agencies' : 'Carta Oficial Abierta a la NASA y Agencias Espaciales'}</div>
                         </div>
-                        <p className="text-xs text-white/50">
-                          Comprime el escudo de la magnetopausa terrestre cuando la velocidad $v$ supera los $800\text{ km/s}$.
+                      </div>
+
+                      <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02] font-serif text-white/85 space-y-4">
+                        <p className="text-sm text-white/50 font-sans font-mono">
+                          <strong>Para:</strong> Science Mission Directorate, NASA · Heliophysics Division<br />
+                          <strong>De:</strong> JESÚS BARRIOS, HELIOX Solar Observatory<br />
+                          <strong>Fecha:</strong> 2026 · Bogotá, Colombia
+                        </p>
+                        <hr className="border-white/10" />
+                        <p>Estimados colegas y directores de misiones heliográficas:</p>
+                        <p>
+                          Por medio del presente documento y a través de la plataforma <strong>HELIOX Solar Observatory</strong>, extendemos nuestro reconocimiento formal al trabajo de telemetría de las misiones SDO, Parker Solar Probe, SOHO y GOES.
+                        </p>
+                        <p>
+                          A su vez, ratificamos nuestro compromiso de <strong>traducir, diseminar y hacer accesible</strong> esta telemetría para millones de personas en Latinoamérica y el mundo en 12 idiomas — de forma gratuita y con datos en tiempo real.
+                        </p>
+                        <p>
+                          Extendemos formalmente nuestra solicitud de colaboración en el intercambio de datos heliofísicos de baja latencia para el avance de la educación científica en comunidades latinoamericanas.
+                        </p>
+                        <hr className="border-white/10" />
+                        <p className="font-sans font-bold text-orange-300 pt-1">
+                          Firmado,<br />
+                          <span className="text-xl">JESÚS BARRIOS</span><br />
+                          <span className="text-xs font-normal text-white/40">Director & Fundador — HELIOX Solar Observatory<br />
+                          heliox-observatory.vercel.app · Bogotá, Colombia</span>
                         </p>
                       </div>
                     </div>
+                  )}
 
-                    <div className="p-5 bg-solar-500/10 border-l-4 border-solar-500 rounded-r-2xl space-y-2">
-                      <p className="font-semibold text-solar-300 text-base sm:text-lg">
-                        &quot;Comprender el Sol no es un lujo académico; es una medida de supervivencia para una civilización 100% electrodependiente.&quot;
-                      </p>
-                      <div className="text-xs text-white/50">— JESÚS BARRIOS, Fundador e Investigador Principal de HELIOX</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* CAPÍTULO 2: CICLO SOLAR 25 */}
-                {activeTab === 'ciclo25' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>📈</span> 2. {isEn ? 'Solar Cycle 25 Peak (2024 - 2026)' : 'Máximo del Ciclo Solar 25 (2024 - 2026)'}
-                      </h2>
-                      <span className="text-xs font-mono text-solar-400 bg-solar-500/10 px-3 py-1 rounded-full border border-solar-500/20">
-                        {isEn ? 'Section 2.1' : 'Sección 2.1'}
-                      </span>
-                    </div>
-
-                    <p>
-                      El Ciclo Solar 25 ha superado sistemáticamente todas las proyecciones iniciales del panel conjunto NASA/NOAA. La tasa de manchas solares (SSN) y la frecuencia de llamaradas de clase X demuestran que nos encontramos ante uno de los ciclos solares más intensos de los últimos 20 años.
-                    </p>
-
-                    <div className="solar-card p-6 border border-white/10 bg-white/5 space-y-4">
-                      <h4 className="font-bold text-white text-base">Hitos Relevantes del Ciclo 25:</h4>
-                      <ul className="space-y-3 text-xs sm:text-sm text-white/70">
-                        <li className="flex items-start gap-2">
-                          <span className="text-solar-400">⚡</span>
-                          <div>
-                            <strong className="text-white">Mayo 2024 (Tormenta G5 AR3664):</strong> La tormenta geomagnética extrema G5 produjo auroras boreales visibles en latitudes tropicales como México, Europa del Sur y el Caribe.
-                          </div>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-solar-400">🚀</span>
-                          <div>
-                            <strong className="text-white">Proyección 2025-2026:</strong> Ventana crítica de eyecciones de masa coronal súper rápidas (&gt;2,200 km/s) con dirección directa al hemisferio nocturno terrestre.
-                          </div>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-solar-400">📡</span>
-                          <div>
-                            <strong className="text-white">Impacto en Satélites LEO (Starlink & GPS):</strong> Densificación de la termosfera por calentamiento ultravioleta extremo, incrementando la fricción orbital y acelerando la reentrada satelital.
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-                {/* CAPÍTULO 3: RIESGO CARRINGTON */}
-                {activeTab === 'carrington' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>⚡</span> 3. {isEn ? 'The Carrington Risk: $2.6 Trillion Impact' : 'El Riesgo Carrington: Impacto Económico de $2.6 Trillones'}
-                      </h2>
-                      <span className="text-xs font-mono text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
-                        {isEn ? 'Catastrophic Scenario' : 'Escenario de Riesgo'}
-                      </span>
-                    </div>
-
-                    <p>
-                      En septiembre de 1859, el Evento Carrington indujo corrientes electromagnéticas extremas en las líneas de telégrafo que provocaron incendios en estaciones de todo el mundo. Hoy en día, una tormenta de magnitud similar impactaría transformadores de alta tensión a escala continental.
-                    </p>
-
-                    <div className="p-6 rounded-2xl bg-red-950/30 border border-red-500/30 space-y-3">
-                      <h4 className="font-bold text-red-400 text-base">Evaluación de Daño en Infraestructura Moderna:</h4>
-                      <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                        Estudios de la Academia Nacional de Ciencias de EE.UU. estiman que el colapso de transformadores de ultra alta tensión (EHV) tomaría de <strong>4 a 10 años</strong> para su fabricación y reemplazo masivo, con pérdidas económicas globales superiores a los <strong>$2.6 billones de dólares</strong>.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* CAPÍTULO 4: EXPLORADOR INTERACTIVO DE APIS DEL GOBIERNO */}
-                {activeTab === 'apis_gobierno' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>🏛️</span> 4. {isEn ? 'Public Government API Feeds (NASA / NOAA / USGS)' : 'Índice de APIs Libres y Públicas del Gobierno'}
-                      </h2>
-                      <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        Live Data Explorer
-                      </span>
-                    </div>
-
-                    <p className="text-xs sm:text-sm text-white/70">
-                      Explora y prueba directamente en tiempo real los endpoints oficiales de telemetría gubernamentales de Estados Unidos y Europa consumidos por **HELIOX**:
-                    </p>
-
-                    {/* Tabs de Selección de API */}
-                    <div className="flex flex-wrap gap-2 p-1 bg-white/5 rounded-xl border border-white/10">
-                      {[
-                        { id: 'noaa_solar_cycle', label: 'NOAA Solar Cycle 25' },
-                        { id: 'noaa_goes_protons', label: 'NOAA GOES Protons (SEP)' },
-                        { id: 'nasa_donki_alerts', label: 'NASA DONKI Alerts' },
-                        { id: 'usgs_geomagnetism', label: 'USGS Geomagnetism' },
-                      ].map((apiTab) => (
-                        <button
-                          key={apiTab.id}
-                          onClick={() => setActiveApiTab(apiTab.id as any)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
-                            activeApiTab === apiTab.id
-                              ? 'bg-solar-500 text-black font-bold'
-                              : 'text-white/60 hover:text-white'
-                          }`}
-                        >
-                          {apiTab.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Visor de Código JSON de la API Seleccionada */}
-                    <div className="p-4 rounded-2xl bg-black border border-white/15 font-mono text-xs overflow-x-auto space-y-3">
-                      <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                        <span className="text-solar-400 font-bold">
-                          Endpoint: {govApiData?.apis?.[activeApiTab]?.endpoint || 'Cargando...'}
-                        </span>
-                        <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                          HTTP 200 OK · Public Access
-                        </span>
-                      </div>
-
-                      {loadingApi ? (
-                        <div className="py-8 text-center text-white/40">
-                          <span className="inline-block animate-spin mr-2">🔄</span> Consultando servidor gubernamental en vivo...
-                        </div>
-                      ) : (
-                        <pre className="text-white/80 max-h-64 overflow-y-auto leading-relaxed">
-                          {JSON.stringify(govApiData?.apis?.[activeApiTab] || {}, null, 2)}
-                        </pre>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* CAPÍTULO 5: PERSPECTIVA GEOPOLÍTICA */}
-                {activeTab === 'geopolitica' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>🌐</span> 5. {isEn ? 'Geopolitical Perspective of Space Weather' : 'Perspectiva Geopolítica de la Climatología Espacial'}
-                      </h2>
-                      <span className="text-xs font-mono text-solar-400 bg-solar-500/10 px-3 py-1 rounded-full border border-solar-500/20">
-                        {isEn ? 'Section 5.1' : 'Sección 5.1'}
-                      </span>
-                    </div>
-
-                    <p>
-                      La soberanía espacial de las naciones emergentes depende de su capacidad para predecir anomalías causadas por el viento solar en sus constelaciones de satélites de observación terrestre y comunicaciones.
-                    </p>
-                    <p>
-                      <strong>HELIOX</strong> provee una capa soberana e independiente de procesamiento en tiempo real, permitiendo a investigadores, operadores de redes y ciudadanos estar alerta ante perturbaciones ionosféricas severas sin depender exclusivamente de portales gubernamentales cerrados.
-                    </p>
-                  </div>
-                )}
-
-                {/* CAPÍTULO 6: CARTA ABIERTA A LA NASA */}
-                {activeTab === 'nasa_letter' && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                      <h2 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-2">
-                        <span>✉️</span> 6. {isEn ? 'Open Letter to NASA & Space Agencies' : 'Carta Oficial Abierta a la NASA y Agencias Espaciales'}
-                      </h2>
-                      <span className="text-xs font-mono text-solar-400 bg-solar-500/10 px-3 py-1 rounded-full border border-solar-500/20">
-                        Official Document
-                      </span>
-                    </div>
-
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl space-y-4 font-serif text-white/90">
-                      <p><strong>A la atención de:</strong> Science Mission Directorate, NASA & Heliophysics Division</p>
-                      <p>
-                        Estimados colegas y directores de misiones heliográficas:
-                      </p>
-                      <p>
-                        Por medio del presente documento y a través de la plataforma <strong>HELIOX Solar Observatory</strong>, extendemos nuestro reconocimiento formal al trabajo de telemetría de las misiones SDO, Parker Solar Probe, SOHO y GOES. A su vez, ratificamos nuestro compromiso de traducir, diseminar y hacer accesible esta telemetría para millones de personas en Latinoamérica y el mundo.
-                      </p>
-                      <p className="font-sans font-bold text-solar-300 pt-2 border-t border-white/10">
-                        Firmado,<br />
-                        JESÚS BARRIOS<br />
-                        <span className="text-xs font-normal text-white/50">Director & Fundador, HELIOX Solar Observatory</span>
-                      </p>
-                    </div>
-                  </div>
-                )}
-
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Barra de Difusión Viral */}
-        <ViralShareBar />
-
-        {/* AdSense Banner Inferior */}
-        <div className="my-8">
-          <AdBanner format="auto" />
+        {/* Navegación entre capítulos */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+          {(() => {
+            const idx = CHAPTERS.findIndex(c => c.id === activeTab)
+            const prev = CHAPTERS[idx - 1]
+            const next = CHAPTERS[idx + 1]
+            return (
+              <>
+                {prev ? (
+                  <button onClick={() => setActiveTab(prev.id)} className="flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors group">
+                    <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                    <span>{prev.icon} {prev.label}</span>
+                  </button>
+                ) : <div />}
+                {next ? (
+                  <button onClick={() => setActiveTab(next.id)} className="flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors group">
+                    <span>{next.icon} {next.label}</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </button>
+                ) : <div />}
+              </>
+            )
+          })()}
         </div>
 
-        {/* Donaciones */}
-        <section className="mt-12">
-          <DonationWidget />
-        </section>
+        {/* Compartir + Ads + Donaciones */}
+        <ViralShareBar />
+        <div className="my-8"><AdBanner format="auto" /></div>
+        <section className="mt-8"><DonationWidget /></section>
       </main>
     </div>
   )
