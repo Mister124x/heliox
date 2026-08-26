@@ -264,12 +264,12 @@ export default function DashboardPage() {
                 <span className="text-[10px] font-mono bg-white/5 px-2 py-0.5 rounded text-white/60">LIVE MODEL</span>
               </div>
               <p className="text-xs text-white/60 leading-relaxed">
-                La magnetopausa terrestre se encuentra a <strong className="text-white font-mono">{magnetopause_Re} Radios Terrestres ($R_E$)</strong>, resistiendo la compresión del viento solar.
+                La magnetopausa terrestre se encuentra a <strong className="text-white font-mono">{magnetopause_Re} Radios Terrestres (Re)</strong>, resistiendo la compresión del viento solar.
               </p>
 
               <div className="space-y-2 text-xs font-mono">
                 <div className="flex justify-between p-3 bg-black/50 border border-white/5 rounded-xl">
-                  <span className="text-white/50">Presión Dinámica ($P_{'{ram}'}$):</span>
+                  <span className="text-white/50">Presión Dinámica (P_ram):</span>
                   <span className="text-orange-300 font-bold">{ramPressure_nPa} nPa</span>
                 </div>
                 <div className="flex justify-between p-3 bg-black/50 border border-white/5 rounded-xl">

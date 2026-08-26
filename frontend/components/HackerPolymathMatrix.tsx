@@ -115,9 +115,11 @@ export default function HackerPolymathMatrix({
 
             <div className="p-4 rounded-xl bg-black border border-white/10 font-mono text-xs text-white/80 space-y-1">
               <div className="text-emerald-300 font-bold">Ecuación Fundamental de Hannes Alfvén (Premio Nobel 1970):</div>
-              <div className="text-lg text-white font-bold my-2">$$v_A = \frac{B}{\sqrt{\mu_0 \cdot \rho}} = \frac{{'{'}}{telemetry.bt_nT || 4.9}\text{ nT}{'}'}}{\sqrt{'{'}\mu_0 \cdot {telemetry.density_p_cm3 || 5.2}\text{ p/cm}^3{'}'}} = {alfvenSpeed_km_s}\text{ km/s}$$</div>
+              <div className="text-base sm:text-lg text-white font-bold my-2">
+                v_A = B / √(μ₀ · ρ) = {alfvenSpeed_km_s} km/s
+              </div>
               <p className="text-[11px] text-white/50">
-                Determina la velocidad a la cual las ondas de plasma y las torsiones magnéticas viajan desde la corona solar hasta el arco de choque terrestre (*Bow Shock*).
+                Determina la velocidad a la cual las ondas de plasma y las torsiones magnéticas viajan desde la corona solar hasta el arco de choque terrestre (Bow Shock).
               </p>
             </div>
           </div>
@@ -129,21 +131,23 @@ export default function HackerPolymathMatrix({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs font-mono text-orange-400 uppercase font-bold">Parámetro Adimensional de Confinamiento</span>
-                <h4 className="text-lg font-bold text-white">Relación entre Presión Térmica y Presión Magnética ($\beta_p$)</h4>
+                <h4 className="text-lg font-bold text-white">Relación entre Presión Térmica y Presión Magnética (β_p)</h4>
               </div>
               <div className="text-right">
                 <div className="text-3xl font-black font-mono text-orange-400">{plasmaBeta}</div>
                 <div className="text-[11px] font-mono text-white/40">
-                  {Number(plasmaBeta) < 1 ? 'Régimen Dominado por Campo Magnético ($\beta < 1$)' : 'Régimen Hidrodinámico ($\beta > 1$)'}
+                  {Number(plasmaBeta) < 1 ? 'Régimen Dominado por Campo Magnético (β < 1)' : 'Régimen Hidrodinámico (β > 1)'}
                 </div>
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-black border border-white/10 font-mono text-xs text-white/80 space-y-1">
               <div className="text-orange-300 font-bold">Régimen Físico del Viento Solar:</div>
-              <div className="text-lg text-white font-bold my-2">$$\beta = \frac{2 \mu_0 \cdot n k_B T}{B^2} = {plasmaBeta}$$</div>
+              <div className="text-base sm:text-lg text-white font-bold my-2">
+                β = (2 · μ₀ · n · k_B · T) / B² = {plasmaBeta}
+              </div>
               <p className="text-[11px] text-white/50">
-                Cuando $\beta &lt; 1$, las líneas de campo magnético solar guían y atrapan el flujo de partículas. Durante eyecciones de masa coronal (CME), $\beta$ se desploma por debajo de 0.1 debido a campos magnéticos ultradensos.
+                Cuando β &lt; 1, las líneas de campo magnético solar guían y atrapan el flujo de partículas. Durante eyecciones de masa coronal (CME), β se desploma por debajo de 0.1 debido a campos magnéticos ultradensos.
               </p>
             </div>
           </div>
