@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import StormAlert from '../../components/StormAlert'
+import ViralShareBar from '../../components/ViralShareBar'
 import AdBanner from '../../components/AdBanner'
 import { useI18n, LanguageSelector } from '../../lib/i18n'
 
@@ -104,6 +105,9 @@ export default function StormsPage() {
 
         {/* Banner AdSense Superior */}
         <AdBanner format="horizontal" />
+
+        {/* Barra de Difusión Viral */}
+        <ViralShareBar />
 
         {loading ? (
           <div className="py-20 text-center text-white/40 font-mono">

@@ -10,6 +10,7 @@ import DonationWidget from '../components/DonationWidget'
 import AlertTicker from '../components/AlertTicker'
 import AffiliateSection from '../components/AffiliateSection'
 import SocialVideoFeed from '../components/SocialVideoFeed'
+import ViralShareBar from '../components/ViralShareBar'
 import AdBanner from '../components/AdBanner'
 import { fetchLiveSolarData, SolarSummary } from '../lib/solarClient'
 import { useI18n, LanguageSelector } from '../lib/i18n'
@@ -285,6 +286,11 @@ export default function HomePage() {
       {/* ─── Banners de AdSense Verificado ──────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4">
         <AdBanner format="auto" />
+      </div>
+
+      {/* ─── Barra de Difusión y Difusión Viral en 1-Clic ───────────────── */}
+      <div className="max-w-7xl mx-auto px-4">
+        <ViralShareBar />
       </div>
 
       {/* ─── Sección de Videos, Reels & Shorts Reales y Actualizados ──────── */}
