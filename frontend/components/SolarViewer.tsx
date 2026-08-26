@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useI18n } from '../lib/i18n'
 
 export interface WavelengthOption {
   key: string
@@ -102,6 +103,10 @@ interface SolarViewerProps {
 }
 
 export default function SolarViewer({ compact = false }: SolarViewerProps) {
+  const { t, lang } = useI18n()
+  const isEn = lang === 'en'
+  const isPt = lang === 'pt'
+
   const [selectedSource, setSelectedSource] = useState('aia_304')
   const [currentUrl, setCurrentUrl] = useState('')
   const [lastFetchTime, setLastFetchTime] = useState<Date>(new Date())
@@ -160,7 +165,9 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
             {loading && (
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
                 <div className="w-14 h-14 rounded-full border-4 border-solar-500 border-t-transparent animate-spin mb-3" />
-                <span className="text-xs font-mono text-solar-300">Descargando telemetría SDO...</span>
+                <span className="text-xs font-mono text-solar-300">
+                  {isEn ? 'Downloading SDO telemetry...' : isPt ? 'Baixando telemetria SDO...' : 'Descargando telemetría SDO...'}
+                </span>
               </div>
             )}
 
@@ -177,7 +184,9 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
             ) : (
               <div className="text-center p-8">
                 <span className="text-6xl">☀️</span>
-                <p className="text-xs text-white/50 mt-2">Sintonizando satélite...</p>
+                <p className="text-xs text-white/50 mt-2">
+                  {isEn ? 'Tuning satellite link...' : isPt ? 'Sintonizando satélite...' : 'Sintonizando satélite...'}
+                </p>
               </div>
             )}
 
@@ -185,13 +194,13 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
             <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
               <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md rounded-full px-3 py-1 border border-white/15">
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
-                <span className="text-[11px] font-bold text-red-400">EN VIVO · {activeWL.instrument}</span>
+                <span className="text-[11px] font-bold text-red-400">{t.nav_live} · {activeWL.instrument}</span>
               </div>
 
               <button
                 onClick={() => updateImage(true)}
                 className="flex items-center gap-1.5 bg-black/80 hover:bg-black backdrop-blur-md rounded-full px-3 py-1 border border-white/15 text-[11px] font-mono text-solar-300 hover:text-white transition-all shadow-lg"
-                title="Actualizar imagen con telemetría reciente de NASA SDO"
+                title={isEn ? 'Update live image from NASA SDO' : 'Actualizar imagen con telemetría de NASA SDO'}
               >
                 <span className={isRefreshing ? 'animate-spin' : ''}>🔄</span>
                 <span>{countdown}s</span>
@@ -256,8 +265,8 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
 
       {/* Pie de imagen informativo */}
       <div className="flex items-center justify-between text-xs text-white/40 mt-3 px-1">
-        <span>🛰️ Satélites SDO & SOHO en Órbita</span>
-        <span className="text-solar-400/80">Refresco automático: 60s</span>
+        <span>🛰️ {isEn ? 'SDO & SOHO Satellites in Orbit' : isPt ? 'Satélites SDO e SOHO em Órbita' : 'Satélites SDO & SOHO en Órbita'}</span>
+        <span className="text-solar-400/80">{isEn ? 'Auto-sync: 60s' : isPt ? 'Auto-sincronização: 60s' : 'Refresco automático: 60s'}</span>
       </div>
     </div>
   )
