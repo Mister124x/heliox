@@ -1,8 +1,15 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { I18nProvider } from '../lib/i18n'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+
+export const viewport: Viewport = {
+  themeColor: '#000000',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://heliox-observatory.vercel.app'),
@@ -12,6 +19,7 @@ export const metadata: Metadata = {
   },
   description:
     'Observatorio solar 24/7 en vivo con telemetría oficial de satélites NASA, NOAA y ESA. Monitoreo en tiempo real de tormentas geomagnéticas G1-G5, llamaradas solares clase X, índice Kp, viento solar e imágenes satelitales SDO en alta resolución. Fundado y dirigido por JESÚS BARRIOS.',
+  manifest: '/manifest.webmanifest',
   keywords: [
     // Español (Alta intención de búsqueda)
     'sol en tiempo real', 'observatorio solar en vivo', 'tormenta solar hoy', 'alerta tormenta geomagnetica',
@@ -60,11 +68,17 @@ export const metadata: Metadata = {
       { url: '/favicon.svg', type: 'image/svg+xml' }
     ],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'HELIOX',
+  },
   other: {
     'google-adsense-account': 'ca-pub-3600083129868122',
     'rating': 'general',
     'distribution': 'global',
     'revisit-after': '1 days',
+    'mobile-web-app-capable': 'yes',
   },
   openGraph: {
     type: 'website',
@@ -124,6 +138,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         'https://github.com/Mister124x/heliox',
         'https://heliox-xi.vercel.app'
       ]
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HELIOX Space Weather App',
+      operatingSystem: 'All (iOS, Android, Windows, macOS, Linux)',
+      applicationCategory: 'EducationalApplication',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
+      },
+      author: {
+        '@type': 'Person',
+        name: 'JESUS BARRIOS'
+      }
     },
     {
       '@context': 'https://schema.org',
@@ -236,11 +266,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="bg-black text-white font-space antialiased">
+      <body className="bg-black text-white font-space antialiased selection:bg-orange-500/30 selection:text-white">
         <I18nProvider>
           {children}
         </I18nProvider>

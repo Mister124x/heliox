@@ -33,7 +33,11 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
+        "https://heliox-observatory.vercel.app",
+        "https://heliox-xi.vercel.app",
+        "https://heliox-git-main-jesus-barrios.vercel.app",
         "https://heliox.jesusbarrios.co",
+        "*",
     ]
 
     # Celery
