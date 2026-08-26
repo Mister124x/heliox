@@ -192,6 +192,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Canonical URL */}
         <link rel="canonical" href="https://heliox-observatory.vercel.app" />
 
+        {/* Feed RSS y OpenSearch para Indexación Rápida */}
+        <link rel="alternate" type="application/rss+xml" title="HELIOX — Feed de Clima Espacial en Tiempo Real" href="/feed.xml" />
+        <link rel="search" type="application/opensearchdescription+xml" title="HELIOX Search" href="/opensearch.xml" />
+
+        {/* Meta Tags Universales de Rastreo para Todos los Buscadores */}
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+        <meta name="slurp" content="index, follow" />
+        <meta name="duckduckbot" content="index, follow" />
+        <meta name="baiduspider" content="index, follow" />
+        <meta name="yandex" content="index, follow" />
+
         {/* Meta Tag de Verificación de Cuenta Google AdSense */}
         <meta name="google-adsense-account" content="ca-pub-3600083129868122" />
 
