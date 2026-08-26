@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-XXXXXXXXXXXXXXXXX'
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_ID || 'ca-pub-3600083129888122'
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
 
-        {/* Google AdSense Script Oficial */}
+        {/* Google AdSense Script Oficial de Jesús Barrios */}
         <script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
