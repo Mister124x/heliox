@@ -1,2 +1,1 @@
-# Google AdSense Publisher Verification — HELIOX (JESUS BARRIOS)
-google.com, pub-3600083129888122, DIRECT, f08c47fec0942fa0
+google.com, pub-3600083129060122, DIRECT, f08c47fec0942fa0

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   creator: 'JESÚS BARRIOS',
   publisher: 'HELIOX Solar Observatory',
   other: {
-    'google-adsense-account': 'ca-pub-3600083129888122',
+    'google-adsense-account': 'ca-pub-3600083129060122',
   },
   openGraph: {
     type: 'website',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const adsenseId = 'ca-pub-3600083129888122'
+  const adsenseId = 'ca-pub-3600083129060122'
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" className="dark">
       <head>
         {/* Meta Tag de Verificación de Cuenta Google AdSense */}
-        <meta name="google-adsense-account" content="ca-pub-3600083129888122" />
+        <meta name="google-adsense-account" content="ca-pub-3600083129060122" />
 
         {/* Schema.org Structured Data para Google Search */}
         <script
