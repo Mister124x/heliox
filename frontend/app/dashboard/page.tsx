@@ -274,11 +274,11 @@ export default function DashboardPage() {
                   <span className="text-orange-300 font-bold">{ramPressure_nPa} nPa</span>
                 </div>
                 <div className="flex justify-between p-3 bg-black/50 border border-white/5 rounded-xl">
-                  <span className="text-white/50">Temperatura Plasma ($T_p$):</span>
+                  <span className="text-white/50">Temperatura Plasma (Tp):</span>
                   <span className="text-white font-bold">{solarWind.temperature_K?.toLocaleString() || '89,000'} K</span>
                 </div>
                 <div className="flex justify-between p-3 bg-black/50 border border-white/5 rounded-xl">
-                  <span className="text-white/50">Campo Total ($B_t$):</span>
+                  <span className="text-white/50">Campo Total (Bt):</span>
                   <span className="text-white font-bold">{solarWind.bt_nT || 4.9} nT</span>
                 </div>
               </div>
