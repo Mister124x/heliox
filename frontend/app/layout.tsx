@@ -270,7 +270,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="bg-black text-white font-space antialiased selection:bg-orange-500/30 selection:text-white">
+      <body className="bg-[#030014] text-white font-space antialiased selection:bg-orange-500/30 selection:text-white relative">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none z-[-1]" />
         <I18nProvider>
           {children}
         </I18nProvider>

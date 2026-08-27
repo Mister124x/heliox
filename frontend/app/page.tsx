@@ -1,7 +1,5 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
@@ -72,15 +70,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
 
       {/* ─── Navbar Flotante con Glassmorphism ───────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-xl bg-black/85">
+      <nav className="fixed top-0 left-0 right-0 z-50 aurora-header">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl overflow-hidden border border-orange-500/40 p-0.5 bg-orange-950/50 shadow-lg shadow-orange-500/20 group-hover:scale-105 transition-transform">
-              <img src="/favicon.svg" alt="HELIOX Logo" className="w-full h-full object-contain" />
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-orange-500/40 p-0.5 bg-orange-950/50 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-all duration-300">
+              <img src="/favicon.svg" alt="HELIOX Logo" className="w-full h-full object-contain animate-float" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-black tracking-tight bg-gradient-to-r from-orange-400 via-yellow-200 to-white bg-clip-text text-transparent">
+                <span className="text-xl font-black tracking-tight bg-gradient-to-r from-orange-400 via-yellow-200 to-white bg-clip-text text-transparent group-hover:from-white group-hover:to-orange-400 transition-all duration-500">
                   HELIOX
                 </span>
                 <span className="text-[10px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded border border-orange-500/30 font-mono font-bold">
@@ -94,18 +92,22 @@ export default function HomePage() {
           </Link>
 
           {/* Menú Desktop */}
-          <div className="hidden md:flex items-center gap-5">
-            <Link href="/dashboard" className="text-sm text-white/70 hover:text-orange-400 transition-colors font-medium">
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/dashboard" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
               {t.nav_dashboard}
+              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
             </Link>
-            <Link href="/storms" className="text-sm text-white/70 hover:text-orange-400 transition-colors font-medium">
+            <Link href="/storms" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
               {t.nav_storms}
+              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
             </Link>
-            <Link href="/reels" className="text-sm text-white/70 hover:text-orange-400 transition-colors font-medium">
+            <Link href="/reels" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
               {t.nav_reels}
+              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
             </Link>
-            <Link href="/analysis" className="text-sm text-white/70 hover:text-orange-400 transition-colors font-medium">
+            <Link href="/analysis" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
               {t.nav_analysis}
+              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
             </Link>
 
             {/* Selector de 12 Idiomas */}
@@ -115,10 +117,10 @@ export default function HomePage() {
             <button
               onClick={() => loadSummary(true)}
               title="Click para actualizar telemetría satelital"
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-3.5 py-1.5 rounded-full border border-white/10 transition-all text-xs"
+              className="flex items-center gap-2 bg-white/5 hover:bg-white/15 px-4 py-2 rounded-full border border-white/20 transition-all duration-300 text-xs hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:-translate-y-0.5"
             >
-              <div className={`w-2 h-2 rounded-full ${isStormy ? 'bg-red-500 animate-ping' : 'bg-emerald-400'}`} />
-              <span className="text-white/80 font-mono font-semibold">
+              <div className={`w-2 h-2 rounded-full ${isStormy ? 'bg-red-500 animate-ping alert-glow' : 'bg-emerald-400 emerald-glow'}`} />
+              <span className="text-white/90 font-mono font-semibold">
                 {isStormy ? 'ALERTA G1-G5' : t.nav_live}
               </span>
               <span className={`text-[10px] font-mono text-orange-400 ${refreshing ? 'animate-spin' : ''}`}>
@@ -132,7 +134,7 @@ export default function HomePage() {
             <LanguageSelector />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white"
+              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
               aria-label="Abrir menú"
             >
               {mobileMenuOpen ? '✕' : '☰'}

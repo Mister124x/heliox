@@ -69,7 +69,7 @@ export default function HackerPolymathMatrix({
         </div>
 
         <span className="text-xs font-mono text-white/40 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl self-start md:self-auto">
-          Resolución: $100\text{ Hz}$ · Modelo CCMC NASA
+          Resolución: 100 Hz · Modelo CCMC NASA
         </span>
       </div>
 
@@ -109,7 +109,7 @@ export default function HackerPolymathMatrix({
               </div>
               <div className="text-right">
                 <div className="text-3xl font-black font-mono text-emerald-400">{alfvenSpeed_km_s} <span className="text-sm text-white/40">km/s</span></div>
-                <div className="text-[11px] font-mono text-white/40">Número de Mach ($M_A$): <strong className="text-white">{machNumber}</strong> (Supersónico)</div>
+                <div className="text-[11px] font-mono text-white/40">Número de Mach (M_A): <strong className="text-white">{machNumber}</strong> (Supersónico)</div>
               </div>
             </div>
 
@@ -163,7 +163,7 @@ export default function HackerPolymathMatrix({
               </div>
               <div className="text-right">
                 <div className="text-3xl font-black font-mono text-purple-400">7.83 <span className="text-sm text-white/40">Hz</span></div>
-                <div className="text-[11px] font-mono text-white/40">Modo Fundamental $n=1$</div>
+                <div className="text-[11px] font-mono text-white/40">Modo Fundamental n=1</div>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export default function HackerPolymathMatrix({
               </div>
               <div className="text-right">
                 <div className="text-3xl font-black font-mono text-blue-400">{dRapFrequency_MHz} <span className="text-sm text-white/40">MHz</span></div>
-                <div className="text-[11px] font-mono text-white/40">Frecuencia Máxima Absorbida ($f_{'{max}'}$)</div>
+                <div className="text-[11px] font-mono text-white/40">Frecuencia Máxima Absorbida (f_max)</div>
               </div>
             </div>
 

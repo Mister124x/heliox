@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Variables globales ─────────────────────────────────────────────────── */
+/* ─── Variables globales HELIOX ──────────────────────────────────────────── */
 :root {
   --solar-orange: #f78708;
   --solar-gold: #fda921;
   --corona-blue: #60a5fa;
-  --space-dark: #020617;
+  --space-dark: #030014;
+  --space-darker: #0a0a1a;
+  --emerald-glow: #10b981;
+  --plasma-purple: #a855f7;
+  --warning-red: #ef4444;
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
@@ -20,57 +24,185 @@ html {
 }
 
 body {
-  background: #000000;
-  background-image: 
-    radial-gradient(ellipse at 20% 50%, rgba(247, 135, 8, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(96, 165, 250, 0.04) 0%, transparent 40%);
+  background-color: var(--space-dark);
+  background-image:
+    radial-gradient(ellipse at 15% 50%, rgba(247, 135, 8, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%, rgba(96, 165, 250, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 45%);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  color: white;
+}
+
+/* ─── Starfield animado inmersivo ────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1.5px 1.5px at 25% 35%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 40% 65%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 55% 10%, rgba(253,169,33,0.5), transparent),
+    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 85% 75%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 15% 80%, rgba(96,165,250,0.4), transparent),
+    radial-gradient(1px 1px at 95% 25%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 30% 90%, rgba(247,135,8,0.3), transparent),
+    radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 85%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 5% 55%, rgba(168,85,247,0.3), transparent);
+  background-repeat: repeat;
+  background-size: 250px 250px;
+  animation: starfield-drift 120s linear infinite;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(247,135,8,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(96,165,250,0.03) 0%, transparent 50%);
+  animation: nebula-float 30s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes starfield-drift {
+  0% { transform: translateY(0) translateX(0); }
+  100% { transform: translateY(-250px) translateX(-50px); }
+}
+
+@keyframes nebula-float {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  50% { transform: translate(2%, -1%) scale(1.02); opacity: 0.7; }
+  100% { transform: translate(-1%, 2%) scale(1); opacity: 0.5; }
+}
+
+/* ─── Aurora Borealis Header Animation ──────────────────────────────────── */
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes aurora-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 /* ─── Scrollbar personalizado ────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0f172a; }
-::-webkit-scrollbar-thumb { background: #f78708; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #fda921; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--space-darker); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--solar-orange), var(--solar-gold));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--solar-gold); }
 
 /* ─── Selección de texto ─────────────────────────────────────────────────── */
-::selection { background: rgba(247, 135, 8, 0.3); color: white; }
+::selection { background: rgba(247, 135, 8, 0.35); color: white; }
 
-/* ─── Componentes ────────────────────────────────────────────────────────── */
+/* ─── Componentes Reutilizables ──────────────────────────────────────────── */
 @layer components {
+  /* Tarjeta con glassmorphism y brillo al hover */
   .solar-card {
-    @apply bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm;
-    @apply hover:border-solar-500/40 transition-all duration-300;
+    @apply relative bg-white/[0.03] border border-white/10 rounded-2xl;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    @apply transition-all duration-500 ease-out;
+    @apply hover:border-orange-500/40 hover:bg-white/[0.06];
+    @apply hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-orange-500/10;
   }
 
+  .solar-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(247,135,8,0.05) 0%, transparent 50%, rgba(96,165,250,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .solar-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Glassmorphism universal */
+  .glassmorphism {
+    @apply bg-white/[0.03] border border-white/10;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Navbar con aurora */
+  .aurora-header {
+    background: linear-gradient(120deg,
+      rgba(247,135,8,0.15) 0%,
+      rgba(96,165,250,0.12) 35%,
+      rgba(16,185,129,0.12) 65%,
+      rgba(168,85,247,0.1) 100%
+    );
+    background-size: 300% 300%;
+    animation: aurora 12s ease infinite;
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    @apply border-b border-white/10;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  }
+
+  /* Badges */
   .solar-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
+    backdrop-filter: blur(8px);
   }
 
+  /* Botón principal con gradiente solar */
   .solar-btn {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
-    @apply bg-solar-500 hover:bg-solar-400 text-black;
-    @apply shadow-lg hover:shadow-solar-500/30;
+    @apply px-6 py-3 rounded-xl font-bold transition-all duration-300;
+    @apply bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-black;
+    @apply shadow-lg shadow-orange-500/30;
+    @apply hover:shadow-orange-500/50 hover:scale-[1.04] hover:brightness-110;
+    @apply active:scale-95;
   }
 
   .solar-btn-outline {
-    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
-    @apply border border-solar-500/50 hover:border-solar-400 text-solar-400;
-    @apply hover:bg-solar-500/10;
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+    @apply border border-orange-500/50 hover:border-orange-400 text-orange-400;
+    @apply hover:bg-orange-500/10;
+    box-shadow: 0 0 0 0 rgba(247,135,8,0);
+    @apply hover:shadow-[0_0_20px_rgba(247,135,8,0.2)];
+    @apply active:scale-95;
   }
 
+  /* Indicador KP Gauge */
   .kp-gauge {
     @apply relative w-full h-4 rounded-full overflow-hidden bg-white/10;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
   }
 
   .data-value {
-    @apply font-mono text-2xl font-bold tabular-nums;
+    @apply font-mono text-2xl font-bold tabular-nums tracking-tight;
   }
 
   .section-title {
-    @apply text-2xl md:text-3xl font-bold tracking-tight;
+    @apply text-2xl md:text-3xl font-black tracking-tight;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
+  /* Ticker / marquee */
   .ticker-container {
     @apply overflow-hidden whitespace-nowrap;
   }
@@ -79,12 +211,202 @@ body {
     @apply inline-flex gap-8 animate-ticker;
   }
 
-  /* Glow de alerta */
+  /* ─── Glow Effects ─────────────────────────────────────────────────── */
   .alert-glow {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4), 0 0 30px rgba(239, 68, 68, 0.2);
+    animation: alert-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .solar-glow {
     box-shadow: 0 0 40px rgba(247, 135, 8, 0.3), 0 0 80px rgba(247, 135, 8, 0.1);
+    animation: solar-pulse 4s ease-in-out infinite alternate;
   }
+
+  .emerald-glow {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    animation: emerald-pulse 3s ease-in-out infinite alternate;
+  }
+
+  .plasma-glow {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.25), 0 0 60px rgba(168, 85, 247, 0.08);
+    animation: plasma-pulse 5s ease-in-out infinite alternate;
+  }
+
+  /* Live indicator dot */
+  .live-dot {
+    @apply w-2 h-2 rounded-full bg-emerald-400;
+    animation: live-blink 2s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  }
+
+  /* Gradient text utility */
+  .gradient-text-solar {
+    background: linear-gradient(135deg, var(--solar-orange) 0%, var(--solar-gold) 50%, var(--corona-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-emerald {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Scan line effect for hacker sections */
+  .scanline-overlay {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanline-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(16, 185, 129, 0.02) 2px,
+      rgba(16, 185, 129, 0.02) 4px
+    );
+    pointer-events: none;
+    animation: scanline-scroll 8s linear infinite;
+  }
+
+  /* Animated border gradient */
+  .border-gradient {
+    position: relative;
+    border: none !important;
+  }
+
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(247,135,8,0.3), rgba(96,165,250,0.3), rgba(16,185,129,0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* ─── Keyframe Animations ────────────────────────────────────────────────── */
+@keyframes alert-pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4), 0 0 30px rgba(239, 68, 68, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), 0 0 60px rgba(239, 68, 68, 0.3); }
+}
+
+@keyframes solar-pulse {
+  0% { box-shadow: 0 0 30px rgba(247, 135, 8, 0.2), 0 0 60px rgba(247, 135, 8, 0.05); }
+  100% { box-shadow: 0 0 60px rgba(247, 135, 8, 0.45), 0 0 120px rgba(247, 135, 8, 0.15); }
+}
+
+@keyframes emerald-pulse {
+  0% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.15); }
+  100% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.35); }
+}
+
+@keyframes plasma-pulse {
+  0% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.15); }
+  100% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.3); }
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
+  50% { opacity: 0.4; box-shadow: 0 0 4px rgba(16, 185, 129, 0.3); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes scanline-scroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ─── Utility Animation Classes ──────────────────────────────────────────── */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 30s linear infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out both;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+/* Loading skeleton pulse */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  @apply rounded-xl;
+}
+
+/* Focus ring for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--solar-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
