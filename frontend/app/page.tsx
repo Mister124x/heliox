@@ -4,8 +4,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Navbar from '../components/Navbar'
 import SolarViewer from '../components/SolarViewer'
 import SolarGlobe3D from '../components/SolarGlobe3D'
+import SolarPeakAlert from '../components/SolarPeakAlert'
+import SolarStormSimulator from '../components/SolarStormSimulator'
+import PatronWall from '../components/PatronWall'
 import HackerPolymathMatrix from '../components/HackerPolymathMatrix'
 import DeclassifiedDossier from '../components/DeclassifiedDossier'
 import KpGauge from '../components/KpGauge'
@@ -17,7 +21,7 @@ import SocialVideoFeed from '../components/SocialVideoFeed'
 import ViralShareBar from '../components/ViralShareBar'
 import AdBanner from '../components/AdBanner'
 import { fetchLiveSolarData, SolarSummary } from '../lib/solarClient'
-import { useI18n, LanguageSelector } from '../lib/i18n'
+import { useI18n } from '../lib/i18n'
 
 export default function HomePage() {
   const { t, lang } = useI18n()
@@ -69,109 +73,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
 
-      {/* ─── Navbar Flotante con Glassmorphism ───────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 aurora-header">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl overflow-hidden border border-orange-500/40 p-0.5 bg-orange-950/50 shadow-lg shadow-orange-500/20 group-hover:scale-110 transition-all duration-300">
-              <img src="/favicon.svg" alt="HELIOX Logo" className="w-full h-full object-contain animate-float" />
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xl font-black tracking-tight bg-gradient-to-r from-orange-400 via-yellow-200 to-white bg-clip-text text-transparent group-hover:from-white group-hover:to-orange-400 transition-all duration-500">
-                  HELIOX
-                </span>
-                <span className="text-[10px] bg-orange-500/20 text-orange-300 px-1.5 py-0.5 rounded border border-orange-500/30 font-mono font-bold">
-                  SC25
-                </span>
-              </div>
-              <span className="text-[10px] text-white/40 leading-none">
-                {t.by} <strong className="text-white/70">JESÚS BARRIOS</strong>
-              </span>
-            </div>
-          </Link>
-
-          {/* Menú Desktop */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/dashboard" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
-              {t.nav_dashboard}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="/storms" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
-              {t.nav_storms}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="/reels" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
-              {t.nav_reels}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
-            </Link>
-            <Link href="/analysis" className="text-sm text-white/70 hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all font-medium relative group">
-              {t.nav_analysis}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-orange-400 transition-all group-hover:w-full"></span>
-            </Link>
-
-            {/* Selector de 12 Idiomas */}
-            <LanguageSelector />
-
-            {/* Botón de Telemetría en Vivo */}
-            <button
-              onClick={() => loadSummary(true)}
-              title="Click para actualizar telemetría satelital"
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/15 px-4 py-2 rounded-full border border-white/20 transition-all duration-300 text-xs hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:-translate-y-0.5"
-            >
-              <div className={`w-2 h-2 rounded-full ${isStormy ? 'bg-red-500 animate-ping alert-glow' : 'bg-emerald-400 emerald-glow'}`} />
-              <span className="text-white/90 font-mono font-semibold">
-                {isStormy ? 'ALERTA G1-G5' : t.nav_live}
-              </span>
-              <span className={`text-[10px] font-mono text-orange-400 ${refreshing ? 'animate-spin' : ''}`}>
-                🔄 {countdown}s
-              </span>
-            </button>
-          </div>
-
-          {/* Acciones Móvil */}
-          <div className="flex md:hidden items-center gap-2">
-            <LanguageSelector />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
-              aria-label="Abrir menú"
-            >
-              {mobileMenuOpen ? '✕' : '☰'}
-            </button>
-          </div>
-        </div>
-
-        {/* Drawer Menú Móvil */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-orange-400 font-bold py-1">
-              🏠 {isEn ? 'Home' : 'Inicio'}
-            </Link>
-            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">
-              📊 {t.nav_dashboard}
-            </Link>
-            <Link href="/storms" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">
-              ⚡ {t.nav_storms}
-            </Link>
-            <Link href="/reels" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">
-              🎬 {t.nav_reels}
-            </Link>
-            <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">
-              📑 {t.nav_analysis} (+15 Pág)
-            </Link>
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-              <span className="text-xs text-white/40">Sincronización NOAA/NASA:</span>
-              <button
-                onClick={() => { loadSummary(true); setMobileMenuOpen(false) }}
-                className="text-xs text-orange-400 font-mono bg-white/5 px-2.5 py-1 rounded-lg border border-white/10"
-              >
-                🔄 Actualizar ({countdown}s)
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
+      {/* ─── Navbar Unificado con Glassmorphism ──────────────────────────── */}
+      <Navbar
+        countdown={countdown}
+        refreshing={refreshing}
+        onRefresh={() => loadSummary(true)}
+        isStormy={isStormy}
+      />
 
       {/* ─── Ticker de alertas en vivo ───────────────────────────────────── */}
       <div className="fixed top-16 left-0 right-0 z-40">
@@ -396,11 +304,26 @@ export default function HomePage() {
         <AdBanner format="auto" />
       </div>
 
+      {/* ─── Banner Oficial de Pico Máximo Ciclo 25 ────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4">
+        <SolarPeakAlert />
+      </div>
+
+      {/* ─── Simulador Interactivo de Impacto en tu Ciudad (Baja Bounce Rate) */}
+      <section className="px-4 py-6 max-w-7xl mx-auto">
+        <SolarStormSimulator />
+      </section>
+
       {/* ─── Equipamiento Astronómico y Afiliados ────────────────────────── */}
       <AffiliateSection />
 
+      {/* ─── Muro de Agradecimientos a Contribuyentes y Donantes en Vivo ─── */}
+      <section className="px-4 max-w-7xl mx-auto">
+        <PatronWall />
+      </section>
+
       {/* ─── Widget de Recaudación y Donaciones Multipasarela ─────────────── */}
-      <section className="px-4 py-12 sm:py-16">
+      <section id="donations" className="px-4 py-12 sm:py-16">
         <div className="max-w-4xl mx-auto">
           <DonationWidget />
         </div>
@@ -427,6 +350,8 @@ export default function HomePage() {
               <Link href="/storms" className="hover:text-orange-400 transition-colors">{t.nav_storms}</Link>
               <Link href="/reels" className="hover:text-orange-400 transition-colors">{t.nav_reels}</Link>
               <Link href="/analysis" className="hover:text-orange-400 transition-colors">{t.nav_analysis}</Link>
+              <Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacidad</Link>
+              <Link href="/terms" className="hover:text-orange-400 transition-colors">Términos</Link>
             </div>
 
             <div className="text-[11px] sm:text-xs text-white/40 text-center md:text-right">

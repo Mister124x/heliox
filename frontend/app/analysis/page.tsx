@@ -4,13 +4,16 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import Navbar from '../../components/Navbar'
+import SolarPeakAlert from '../../components/SolarPeakAlert'
+import PatronWall from '../../components/PatronWall'
 import DonationWidget from '../../components/DonationWidget'
 import SolarGlobe3D from '../../components/SolarGlobe3D'
 import HackerPolymathMatrix from '../../components/HackerPolymathMatrix'
 import DeclassifiedDossier from '../../components/DeclassifiedDossier'
 import AdBanner from '../../components/AdBanner'
 import ViralShareBar from '../../components/ViralShareBar'
-import { useI18n, LanguageSelector } from '../../lib/i18n'
+import { useI18n } from '../../lib/i18n'
 
 /* ─── Mapa de capítulos ─────────────────────────────────────────── */
 const CHAPTER_IDS = ['fundacional', 'ciclo25', 'carrington', 'apis_gobierno', 'geopolitica', 'nasa_letter'] as const
@@ -99,44 +102,8 @@ export default function AnalysisPage() {
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
 
-      {/* ════════════════ NAVBAR ════════════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-xl" style={{ background: 'rgba(0,0,0,0.85)' }}>
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-orange-500/40 bg-orange-950/50 p-0.5">
-              <img src="/favicon.svg" alt="HELIOX" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-orange-400 to-yellow-300 bg-clip-text text-transparent">
-              HELIOX
-            </span>
-            <span className="text-xs text-orange-400 font-mono hidden sm:inline bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30">
-              RESEARCH
-            </span>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-5">
-            {[['/', isEn ? 'Home' : 'Inicio'], ['/dashboard', t.nav_dashboard], ['/storms', t.nav_storms], ['/reels', t.nav_reels]].map(([href, label]) => (
-              <Link key={href} href={href} className="text-sm text-white/50 hover:text-white transition-colors">{label}</Link>
-            ))}
-            <Link href="/analysis" className="text-sm text-orange-400 font-bold">{t.nav_analysis}</Link>
-            <LanguageSelector />
-          </div>
-
-          <div className="flex md:hidden items-center gap-2">
-            <LanguageSelector />
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-xl bg-white/5 border border-white/10">
-              {mobileMenuOpen ? '✕' : '☰'}
-            </button>
-          </div>
-        </div>
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
-            {[['/', isEn ? 'Home' : 'Inicio'], ['/dashboard', t.nav_dashboard], ['/storms', t.nav_storms], ['/reels', t.nav_reels], ['/analysis', t.nav_analysis]].map(([href, label]) => (
-              <Link key={href} href={href} onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{label}</Link>
-            ))}
-          </div>
-        )}
-      </nav>
+      {/* ════════════════ NAVBAR UNIFICADO ════════════════ */}
+      <Navbar />
 
       {/* ════════════════ HERO HEADER — VISUAL IMPACTO TOTAL ════════════════ */}
       <div className="relative pt-16 overflow-hidden">
@@ -719,11 +686,39 @@ export default function AnalysisPage() {
         {/* ─── Dossier Desclasificado Oficial ─────────────────────────────── */}
         <DeclassifiedDossier />
 
+        {/* ─── Banner Oficial de Pico Máximo Ciclo 25 ────────────────────── */}
+        <SolarPeakAlert />
+
+        {/* ─── Muro de Agradecimientos a Contribuyentes y Donantes en Vivo ─── */}
+        <PatronWall />
+
         {/* Compartir + Ads + Donaciones */}
         <ViralShareBar />
         <div className="my-8"><AdBanner format="auto" /></div>
         <section className="mt-8"><DonationWidget /></section>
       </main>
+
+      {/* Footer Oficial */}
+      <footer className="border-t border-white/10 px-4 py-8 mt-12 bg-black/90">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <div className="flex items-center gap-2">
+            <span className="text-white font-bold">HELIOX</span>
+            <span>· por JESÚS BARRIOS</span>
+          </div>
+          <div className="flex flex-wrap gap-4 text-white/60">
+            <Link href="/" className="hover:text-orange-400 transition-colors">Inicio</Link>
+            <Link href="/dashboard" className="hover:text-orange-400 transition-colors">Dashboard</Link>
+            <Link href="/storms" className="hover:text-orange-400 transition-colors">Tormentas</Link>
+            <Link href="/reels" className="hover:text-orange-400 transition-colors">Reels</Link>
+            <Link href="/analysis" className="text-orange-400 font-bold">Análisis</Link>
+            <Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacidad</Link>
+            <Link href="/terms" className="hover:text-orange-400 transition-colors">Términos</Link>
+          </div>
+          <div className="text-[11px] text-white/40">
+            © 2026 JESÚS BARRIOS · Datos NASA & NOAA
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

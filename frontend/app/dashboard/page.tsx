@@ -4,8 +4,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import Navbar from '../../components/Navbar'
 import SolarViewer from '../../components/SolarViewer'
 import SolarGlobe3D from '../../components/SolarGlobe3D'
+import SolarPeakAlert from '../../components/SolarPeakAlert'
+import PatronWall from '../../components/PatronWall'
 import HackerPolymathMatrix from '../../components/HackerPolymathMatrix'
 import KpGauge from '../../components/KpGauge'
 import StormAlert from '../../components/StormAlert'
@@ -13,7 +16,7 @@ import AlertTicker from '../../components/AlertTicker'
 import AdBanner from '../../components/AdBanner'
 import ViralShareBar from '../../components/ViralShareBar'
 import { fetchLiveSolarData, SolarSummary } from '../../lib/solarClient'
-import { useI18n, LanguageSelector } from '../../lib/i18n'
+import { useI18n } from '../../lib/i18n'
 
 export default function DashboardPage() {
   const { t, lang } = useI18n()
@@ -72,63 +75,13 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-black text-white pb-24 overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
 
-      {/* ─── Navbar ──────────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/85 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-orange-500/40 p-0.5 bg-orange-950/50">
-              <img src="/favicon.svg" alt="HELIOX" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-orange-400 to-white bg-clip-text text-transparent">
-              HELIOX
-            </span>
-            <span className="text-[10px] text-orange-400 font-mono hidden sm:inline bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
-              MISSION CONTROL
-            </span>
-          </Link>
-
-          {/* Menú Desktop */}
-          <div className="hidden md:flex items-center gap-5">
-            <Link href="/" className="text-sm text-white/60 hover:text-white transition-colors">{isEn ? 'Home' : 'Inicio'}</Link>
-            <Link href="/dashboard" className="text-sm text-orange-400 font-bold">{t.nav_dashboard}</Link>
-            <Link href="/storms" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_storms}</Link>
-            <Link href="/reels" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_reels}</Link>
-            <Link href="/analysis" className="text-sm text-white/60 hover:text-white transition-colors">{t.nav_analysis}</Link>
-            
-            <LanguageSelector />
-
-            <button
-              onClick={() => loadData(true)}
-              className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-orange-300 transition-all"
-            >
-              <span className={refreshing ? 'animate-spin' : ''}>🔄</span>
-              <span>{countdown}s</span>
-            </button>
-          </div>
-
-          {/* Acciones Móvil */}
-          <div className="flex md:hidden items-center gap-2">
-            <LanguageSelector />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl bg-white/5 border border-white/10 text-white"
-            >
-              {mobileMenuOpen ? '✕' : '☰'}
-            </button>
-          </div>
-        </div>
-
-        {/* Drawer Menú Móvil */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-black/95 border-b border-white/10 px-4 py-4 space-y-3">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{isEn ? 'Home' : 'Inicio'}</Link>
-            <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-orange-400 font-bold py-1">{t.nav_dashboard}</Link>
-            <Link href="/storms" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_storms}</Link>
-            <Link href="/reels" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_reels}</Link>
-            <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-white/80 py-1">{t.nav_analysis} (+15 Pág)</Link>
-          </div>
-        )}
-      </nav>
+      {/* ─── Navbar Unificado con Glassmorphism ──────────────────────────── */}
+      <Navbar
+        countdown={countdown}
+        refreshing={refreshing}
+        onRefresh={() => loadData(true)}
+        isStormy={isStormy}
+      />
 
       {/* ─── Ticker de Alertas en Vivo ───────────────────────────────────── */}
       <div className="fixed top-16 left-0 right-0 z-40">
@@ -310,6 +263,12 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* ─── Banner Oficial de Pico Máximo Ciclo 25 ────────────────────── */}
+        <SolarPeakAlert />
+
+        {/* ─── Muro de Agradecimientos a Contribuyentes y Donantes en Vivo ─── */}
+        <PatronWall />
+
         <ViralShareBar />
 
         {/* AdSense Inferior */}
@@ -317,6 +276,28 @@ export default function DashboardPage() {
           <AdBanner format="auto" />
         </div>
       </main>
+
+      {/* Footer Oficial */}
+      <footer className="border-t border-white/10 px-4 py-8 mt-12 bg-black/90">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <div className="flex items-center gap-2">
+            <span className="text-white font-bold">HELIOX</span>
+            <span>· por JESÚS BARRIOS</span>
+          </div>
+          <div className="flex flex-wrap gap-4 text-white/60">
+            <Link href="/" className="hover:text-orange-400 transition-colors">Inicio</Link>
+            <Link href="/dashboard" className="text-orange-400 font-bold">Dashboard</Link>
+            <Link href="/storms" className="hover:text-orange-400 transition-colors">Tormentas</Link>
+            <Link href="/reels" className="hover:text-orange-400 transition-colors">Reels</Link>
+            <Link href="/analysis" className="hover:text-orange-400 transition-colors">Análisis</Link>
+            <Link href="/privacy" className="hover:text-orange-400 transition-colors">Privacidad</Link>
+            <Link href="/terms" className="hover:text-orange-400 transition-colors">Términos</Link>
+          </div>
+          <div className="text-[11px] text-white/40">
+            © 2026 JESÚS BARRIOS · Datos NASA & NOAA
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
