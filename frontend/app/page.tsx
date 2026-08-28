@@ -71,7 +71,7 @@ export default function HomePage() {
   const xray = summary?.xray_flux ?? { class: 'C1.4', flux_wm2: 1.45e-6 }
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
+    <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 selection:text-white">
 
       {/* ─── Navbar Unificado con Glassmorphism ──────────────────────────── */}
       <Navbar

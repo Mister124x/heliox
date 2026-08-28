@@ -100,7 +100,7 @@ export default function AnalysisPage() {
   const activeChapter = CHAPTERS.find(c => c.id === activeTab)!
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 selection:text-white">
 
       {/* ════════════════ NAVBAR UNIFICADO ════════════════ */}
       <Navbar />

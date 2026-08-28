@@ -73,7 +73,7 @@ export default function DashboardPage() {
   const magnetopause_Re = (Math.pow(1.8 / Math.max(Number(ramPressure_nPa), 0.5), 1 / 6) * 10.2).toFixed(1)
 
   return (
-    <div className="min-h-screen bg-black text-white pb-24 overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
+    <div className="min-h-screen bg-black text-white pb-24 selection:bg-orange-500/30 selection:text-white">
 
       {/* ─── Navbar Unificado con Glassmorphism ──────────────────────────── */}
       <Navbar

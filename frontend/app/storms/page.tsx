@@ -55,7 +55,7 @@ export default function StormsPage() {
   const totalEvents = cmes.length + flares.length + geomag.length
 
   return (
-    <div className="min-h-screen bg-black text-white pb-24 overflow-x-hidden selection:bg-orange-500/30 selection:text-white">
+    <div className="min-h-screen bg-black text-white pb-24 selection:bg-orange-500/30 selection:text-white">
 
       {/* ─── Navbar Unificado con Glassmorphism ──────────────────────────── */}
       <Navbar />
