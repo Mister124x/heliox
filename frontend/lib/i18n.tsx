@@ -981,12 +981,14 @@ export function LanguageSelector({ className = '' }: { className?: string }) {
     <div className={`relative ${className}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/10 text-xs text-white/70 hover:text-white transition-all"
+        className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 active:scale-95 px-2.5 py-1.5 rounded-lg border border-white/10 text-xs text-white/70 hover:text-white transition-all cursor-pointer"
         aria-label={t.lang_select}
+        aria-expanded={open}
+        aria-haspopup="true"
       >
         <span>{LANG_FLAGS[lang]}</span>
-        <span className="hidden sm:inline">{LANG_LABELS[lang]}</span>
-        <span className="text-white/30">▾</span>
+        <span className="hidden sm:inline font-medium">{LANG_LABELS[lang]}</span>
+        <span className="text-white/30 text-[10px] ml-0.5">▾</span>
       </button>
 
       {open && (
@@ -995,18 +997,22 @@ export function LanguageSelector({ className = '' }: { className?: string }) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Dropdown */}
-          <div className="absolute right-0 top-full mt-1 z-50 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 overflow-hidden min-w-[160px] max-h-[320px] overflow-y-auto">
+          <div
+            role="menu"
+            className="absolute right-0 top-full mt-1 z-50 bg-black/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl shadow-black/50 overflow-hidden min-w-[170px] max-h-[320px] overflow-y-auto animate-fadeIn"
+          >
             {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
               <button
                 key={l}
+                role="menuitem"
                 onClick={() => { setLang(l); setOpen(false) }}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-white/10 transition-colors ${
-                  l === lang ? 'bg-solar-500/20 text-solar-300 font-semibold' : 'text-white/70'
+                className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs hover:bg-white/10 active:scale-[0.98] transition-all text-left ${
+                  l === lang ? 'bg-orange-500/20 text-orange-300 font-semibold' : 'text-white/70 hover:text-white'
                 }`}
               >
                 <span className="text-base">{LANG_FLAGS[l]}</span>
                 <span>{LANG_LABELS[l]}</span>
-                {l === lang && <span className="ml-auto text-solar-400">✓</span>}
+                {l === lang && <span className="ml-auto text-orange-400 font-bold">✓</span>}
               </button>
             ))}
           </div>

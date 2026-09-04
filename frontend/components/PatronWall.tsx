@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useI18n } from '../lib/i18n'
 
@@ -128,13 +129,13 @@ export default function PatronWall() {
         </div>
 
         {/* Botón rápido a donar */}
-        <a
-          href="#donations"
-          className="solar-btn text-xs sm:text-sm py-2.5 px-5 self-start md:self-auto font-bold flex items-center gap-2"
+        <Link
+          href="/#donations"
+          className="solar-btn text-xs sm:text-sm py-2.5 px-5 self-start md:self-auto font-bold flex items-center gap-2 active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
         >
           <span>💖</span>
           <span>{isEn ? 'Become a Patron' : 'Quiero Apoyar el Proyecto'}</span>
-        </a>
+        </Link>
       </div>
 
       {/* Barra de Meta Comunitaria */}
@@ -159,34 +160,37 @@ export default function PatronWall() {
       </div>
 
       {/* Filtros */}
-      <div className="flex items-center gap-2 mb-4 relative z-10 text-xs font-mono">
+      <div className="flex flex-wrap items-center gap-2 mb-4 relative z-10 text-xs font-mono">
         <span className="text-white/40 mr-1">Filtrar:</span>
         <button
+          type="button"
           onClick={() => setFilter('all')}
-          className={`px-3 py-1 rounded-lg border transition-all ${
+          className={`px-3 py-1.5 rounded-xl border transition-all active:scale-95 cursor-pointer ${
             filter === 'all'
-              ? 'bg-emerald-500 text-black border-emerald-400 font-bold'
-              : 'bg-white/5 text-white/60 border-white/10 hover:text-white'
+              ? 'bg-emerald-500 text-black border-emerald-400 font-bold shadow-md shadow-emerald-500/20'
+              : 'bg-white/5 text-white/60 border-white/10 hover:text-white hover:bg-white/10'
           }`}
         >
           Todos ({PATRONS_FEED.length})
         </button>
         <button
+          type="button"
           onClick={() => setFilter('cop')}
-          className={`px-3 py-1 rounded-lg border transition-all ${
+          className={`px-3 py-1.5 rounded-xl border transition-all active:scale-95 cursor-pointer ${
             filter === 'cop'
-              ? 'bg-purple-600 text-white border-purple-500 font-bold'
-              : 'bg-white/5 text-white/60 border-white/10 hover:text-white'
+              ? 'bg-purple-600 text-white border-purple-500 font-bold shadow-md shadow-purple-600/20'
+              : 'bg-white/5 text-white/60 border-white/10 hover:text-white hover:bg-white/10'
           }`}
         >
           📱 Nequi / Daviplata / Bancolombia
         </button>
         <button
+          type="button"
           onClick={() => setFilter('usd')}
-          className={`px-3 py-1 rounded-lg border transition-all ${
+          className={`px-3 py-1.5 rounded-xl border transition-all active:scale-95 cursor-pointer ${
             filter === 'usd'
-              ? 'bg-blue-600 text-white border-blue-500 font-bold'
-              : 'bg-white/5 text-white/60 border-white/10 hover:text-white'
+              ? 'bg-blue-600 text-white border-blue-500 font-bold shadow-md shadow-blue-600/20'
+              : 'bg-white/5 text-white/60 border-white/10 hover:text-white hover:bg-white/10'
           }`}
         >
           🌐 PayPal (Internacional)

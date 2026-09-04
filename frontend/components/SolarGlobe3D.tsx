@@ -236,6 +236,24 @@ export default function SolarGlobe3D() {
     setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY })
   }
 
+  // Reset de rotación y zoom a estado inicial
+  const handleResetView = () => {
+    setRotation({ x: 15, y: 35 })
+    setZoom(1.0)
+    setSelectedHotspot(LIVE_HOTSPOTS[0])
+    setAutoRotate(true)
+  }
+
+  // Centrar el globo en el hotspot seleccionado
+  const handleSelectHotspot = (hotspot: Hotspot) => {
+    setSelectedHotspot(hotspot)
+    setAutoRotate(false)
+    setRotation({
+      x: Math.max(-45, Math.min(45, -hotspot.lat * 0.4)),
+      y: ((360 - hotspot.lon) % 360 + 360) % 360,
+    })
+  }
+
   return (
     <div className="rounded-3xl p-6 bg-black border border-white/10 relative overflow-hidden space-y-4 shadow-2xl">
       {/* Barra superior de control 3D */}
@@ -250,54 +268,83 @@ export default function SolarGlobe3D() {
           </h3>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Controles de Zoom */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Controles de Zoom (- / +) */}
           <div className="flex items-center bg-white/5 border border-white/10 rounded-xl p-1 text-xs font-mono">
             <button
-              onClick={() => setZoom((z) => Math.max(0.8, z - 0.1))}
-              className="px-2 py-1 hover:bg-white/10 rounded text-white"
-              title="Alejar"
+              onClick={() => setZoom((z) => Math.max(0.8, Number((z - 0.1).toFixed(1))))}
+              className="px-2.5 py-1 hover:bg-white/10 active:scale-90 rounded text-white font-bold transition-all"
+              title="Alejar (Zoom -)"
+              aria-label="Alejar zoom"
             >
               −
             </button>
-            <span className="px-2 text-white/60">{(zoom * 100).toFixed(0)}%</span>
+            <span className="px-2 text-white/70 font-semibold min-w-[45px] text-center">
+              {(zoom * 100).toFixed(0)}%
+            </span>
             <button
-              onClick={() => setZoom((z) => Math.min(1.4, z + 0.1))}
-              className="px-2 py-1 hover:bg-white/10 rounded text-white"
-              title="Acercar"
+              onClick={() => setZoom((z) => Math.min(1.4, Number((z + 0.1).toFixed(1))))}
+              className="px-2.5 py-1 hover:bg-white/10 active:scale-90 rounded text-white font-bold transition-all"
+              title="Acercar (Zoom +)"
+              aria-label="Acercar zoom"
             >
               +
             </button>
           </div>
 
+          {/* Botón de Reset de Vista */}
+          <button
+            onClick={handleResetView}
+            className="px-3 py-1.5 rounded-xl text-xs font-mono border border-white/10 bg-white/5 hover:bg-white/10 active:scale-95 text-white/80 hover:text-white transition-all flex items-center gap-1.5"
+            title="Restablecer orientación y zoom original"
+          >
+            <span>🔄</span>
+            <span>{isEn ? 'Reset View' : 'Restablecer'}</span>
+          </button>
+
+          {/* Botón de Auto-rotación (Play/Pausa) */}
           <button
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono border transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono border transition-all active:scale-95 flex items-center gap-1.5 ${
               autoRotate
-                ? 'bg-orange-500 text-black border-orange-400 font-bold'
-                : 'bg-white/5 text-white/70 border-white/10 hover:text-white'
+                ? 'bg-orange-500 text-black border-orange-400 font-bold shadow-lg shadow-orange-500/25'
+                : 'bg-white/5 text-white/70 border-white/10 hover:text-white hover:bg-white/10'
             }`}
+            title={autoRotate ? 'Pausar auto-rotación' : 'Activar auto-rotación'}
           >
-            {autoRotate ? '⏸️ Pausar Rotación' : '▶️ Auto-Rotar'}
+            <span>{autoRotate ? '⏸️' : '▶️'}</span>
+            <span>{autoRotate ? (isEn ? 'Pause' : 'Pausar') : (isEn ? 'Auto-Rotate' : 'Auto-Rotar')}</span>
           </button>
         </div>
       </div>
 
-      {/* Selector de Filtros Espectroscópicos 3D */}
+      {/* Selector de Modo Espectral (AIA 304, AIA 171, AIA 193, HMI MAG) */}
       <div className="flex flex-wrap gap-2">
-        {(['304', '171', '193', 'mag'] as const).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => setSpectralMode(mode)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border transition-all ${
-              spectralMode === mode
-                ? 'bg-white text-black border-white shadow-lg'
-                : 'bg-white/5 text-white/60 border-white/10 hover:text-white'
-            }`}
-          >
-            {colorThemes[mode].label.split(' ')[0]} {colorThemes[mode].label.split(' ')[1]}
-          </button>
-        ))}
+        {(
+          [
+            { mode: '304', label: 'AIA 304', sub: 'Cromosfera', color: '#f97316' },
+            { mode: '171', label: 'AIA 171', sub: 'Corona Baja', color: '#38bdf8' },
+            { mode: '193', label: 'AIA 193', sub: 'Agujeros', color: '#22c55e' },
+            { mode: 'mag', label: 'HMI MAG', sub: 'Campo Mag.', color: '#a3a3a3' },
+          ] as const
+        ).map(({ mode, label, sub, color }) => {
+          const isSelected = spectralMode === mode
+          return (
+            <button
+              key={mode}
+              onClick={() => setSpectralMode(mode)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border transition-all flex items-center gap-2 active:scale-95 ${
+                isSelected
+                  ? 'bg-white text-black border-white shadow-lg'
+                  : 'bg-white/5 text-white/70 border-white/10 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+              <span>{label}</span>
+              <span className="text-[10px] opacity-70 hidden sm:inline font-normal">({sub})</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Canvas 3D Interactivo con Drag & Touch */}
@@ -331,16 +378,16 @@ export default function SolarGlobe3D() {
         {LIVE_HOTSPOTS.map((hotspot) => (
           <button
             key={hotspot.id}
-            onClick={() => setSelectedHotspot(hotspot)}
-            className={`p-3 rounded-2xl text-left border transition-all ${
+            onClick={() => handleSelectHotspot(hotspot)}
+            className={`p-3 rounded-2xl text-left border transition-all active:scale-95 cursor-pointer ${
               selectedHotspot?.id === hotspot.id
                 ? 'bg-orange-500/15 border-orange-500/60 shadow-lg shadow-orange-500/10'
-                : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/5'
             }`}
           >
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-white truncate">{hotspot.name}</span>
-              <span className="text-[10px] font-mono text-orange-400">{hotspot.type}</span>
+              <span className="text-[10px] font-mono text-orange-400 font-bold">{hotspot.type}</span>
             </div>
             <div className="text-[11px] text-white/50 font-mono">{hotspot.intensity}</div>
           </button>

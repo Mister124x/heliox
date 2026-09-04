@@ -199,11 +199,12 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
 
               <button
                 onClick={() => updateImage(true)}
-                className="flex items-center gap-1.5 bg-black/80 hover:bg-black backdrop-blur-md rounded-full px-3 py-1 border border-white/15 text-[11px] font-mono text-solar-300 hover:text-white transition-all shadow-lg"
-                title={isEn ? 'Update live image from NASA SDO' : 'Actualizar imagen con telemetría de NASA SDO'}
+                className="flex items-center gap-1.5 bg-black/80 hover:bg-black active:scale-95 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20 text-[11px] font-mono text-solar-300 hover:text-white transition-all shadow-lg cursor-pointer"
+                title={isEn ? 'Update live image from NASA SDO' : 'Actualizar imagen con telemetría de NASA SDO en tiempo real'}
+                aria-label="Recargar imagen SDO en tiempo real"
               >
-                <span className={isRefreshing ? 'animate-spin' : ''}>🔄</span>
-                <span>{countdown}s</span>
+                <span className={isRefreshing ? 'animate-spin inline-block' : 'inline-block'}>🔄</span>
+                <span>{isRefreshing ? (isEn ? 'Syncing...' : 'Sincronizando...') : `${countdown}s`}</span>
               </button>
             </div>
 
@@ -242,31 +243,41 @@ export default function SolarViewer({ compact = false }: SolarViewerProps) {
 
       {/* Selector de Longitudes de Onda */}
       <div className="mt-4 grid grid-cols-4 gap-1.5 sm:gap-2">
-        {WAVELENGTHS.map((wl) => (
-          <button
-            key={wl.key}
-            onClick={() => setSelectedSource(wl.key)}
-            className={`py-2 px-1 sm:px-2 rounded-xl text-xs font-semibold transition-all duration-200 border text-center flex flex-col items-center justify-center gap-0.5 ${
-              selectedSource === wl.key
-                ? 'text-black font-bold shadow-lg'
-                : 'bg-white/5 text-white/70 border-white/10 hover:border-white/30 hover:bg-white/10'
-            }`}
-            style={
-              selectedSource === wl.key
-                ? { backgroundColor: wl.color, borderColor: wl.color, boxShadow: `0 0 15px ${wl.color}40` }
-                : {}
-            }
-          >
-            <span className="font-mono text-[11px]">{wl.label}</span>
-            <span className="text-[9px] opacity-80 truncate max-w-full">{wl.desc.split(' ')[0]}</span>
-          </button>
-        ))}
+        {WAVELENGTHS.map((wl) => {
+          const isSelected = selectedSource === wl.key
+          return (
+            <button
+              key={wl.key}
+              onClick={() => setSelectedSource(wl.key)}
+              className={`py-2 px-1 sm:px-2 rounded-xl text-xs font-semibold transition-all duration-200 border text-center flex flex-col items-center justify-center gap-0.5 active:scale-95 cursor-pointer ${
+                isSelected
+                  ? 'text-black font-bold shadow-lg'
+                  : 'bg-white/5 text-white/70 border-white/10 hover:border-white/30 hover:bg-white/10'
+              }`}
+              style={
+                isSelected
+                  ? { backgroundColor: wl.color, borderColor: wl.color, boxShadow: `0 0 15px ${wl.color}40` }
+                  : {}
+              }
+              aria-label={`Seleccionar espectro ${wl.label} ${wl.desc}`}
+            >
+              <span className="font-mono text-[11px] font-bold">{wl.label}</span>
+              <span className="text-[9px] opacity-80 truncate max-w-full">{wl.desc.split(' ')[0]}</span>
+            </button>
+          )
+        })}
       </div>
 
-      {/* Pie de imagen informativo */}
-      <div className="flex items-center justify-between text-xs text-white/40 mt-3 px-1">
+      {/* Pie de imagen informativo con botón de recarga adicional */}
+      <div className="flex flex-wrap items-center justify-between text-xs text-white/40 mt-3 px-1 gap-2">
         <span>🛰️ {isEn ? 'SDO & SOHO Satellites in Orbit' : isPt ? 'Satélites SDO e SOHO em Órbita' : 'Satélites SDO & SOHO en Órbita'}</span>
-        <span className="text-solar-400/80">{isEn ? 'Auto-sync: 60s' : isPt ? 'Auto-sincronização: 60s' : 'Refresco automático: 60s'}</span>
+        <button
+          onClick={() => updateImage(true)}
+          className="text-solar-400/90 hover:text-solar-300 font-mono text-[11px] flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+        >
+          <span className={isRefreshing ? 'animate-spin' : ''}>🔄</span>
+          <span>{isRefreshing ? (isEn ? 'Reloading...' : 'Recargando...') : (isEn ? 'Reload SDO Live' : 'Recargar en Tiempo Real')}</span>
+        </button>
       </div>
     </div>
   )

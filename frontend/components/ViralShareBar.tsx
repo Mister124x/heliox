@@ -71,7 +71,8 @@ export default function ViralShareBar() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/20"
+            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 font-mono"
+            title="Compartir en WhatsApp"
           >
             <span>💬</span>
             <span>WhatsApp</span>
@@ -82,10 +83,11 @@ export default function ViralShareBar() {
             href={twitterUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-1.5"
+            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 active:scale-95 text-white border border-white/20 transition-all flex items-center gap-1.5 font-mono"
+            title="Compartir en X / Twitter"
           >
             <span>𝕏</span>
-            <span>Post</span>
+            <span>X (Twitter)</span>
           </a>
 
           {/* Telegram */}
@@ -93,7 +95,8 @@ export default function ViralShareBar() {
             href={telegramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-sky-600/30 hover:bg-sky-600 text-sky-200 hover:text-white border border-sky-500/30 transition-all flex items-center gap-1.5"
+            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-sky-600/30 hover:bg-sky-600 active:scale-95 text-sky-200 hover:text-white border border-sky-500/30 transition-all flex items-center gap-1.5 font-mono"
+            title="Compartir en Telegram"
           >
             <span>✈️</span>
             <span>Telegram</span>
@@ -104,19 +107,22 @@ export default function ViralShareBar() {
             href={facebookUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-blue-600/30 hover:bg-blue-600 text-blue-200 hover:text-white border border-blue-500/30 transition-all flex items-center gap-1.5"
+            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-blue-600/30 hover:bg-blue-600 active:scale-95 text-blue-200 hover:text-white border border-blue-500/30 transition-all flex items-center gap-1.5 font-mono hidden sm:flex"
+            title="Compartir en Facebook"
           >
             <span>📘</span>
             <span>Facebook</span>
           </a>
 
-          {/* Botón de Copiar o Share Nativo Móvil */}
+          {/* Botón de Copiar Link Directo */}
           <button
-            onClick={handleNativeShare}
-            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-solar-500 hover:bg-solar-400 text-black transition-all flex items-center gap-1.5 shadow-lg shadow-solar-500/20"
+            type="button"
+            onClick={copyLink}
+            className="py-2.5 px-3.5 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-400 active:scale-95 text-black transition-all flex items-center gap-1.5 shadow-lg shadow-orange-500/20 font-mono cursor-pointer"
+            title="Copiar enlace al portapapeles"
           >
-            <span>🚀</span>
-            <span>{copied ? '✅ ¡Copiado!' : isEn ? 'Share Link' : 'Compartir'}</span>
+            <span>{copied ? '✅' : '📋'}</span>
+            <span>{copied ? (isEn ? 'Link Copied!' : '¡Enlace Copiado!') : (isEn ? 'Copy Link' : 'Copiar Link')}</span>
           </button>
         </div>
       </div>

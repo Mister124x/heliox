@@ -28,6 +28,7 @@ export default function SolarStormSimulator() {
 
   const [selectedRegion, setSelectedRegion] = useState<Region>(REGIONS[0])
   const [testKp, setTestKp] = useState<number>(6)
+  const [copiedReport, setCopiedReport] = useState(false)
 
   // Cálculos dinámicos según Kp y Latitud Geomagnética
   const absGeomag = Math.abs(selectedRegion.geomagLat)
@@ -45,10 +46,24 @@ export default function SolarStormSimulator() {
   const gicRisk = testKp < 5 ? 'Bajo / Normal' : testKp < 7 ? 'Moderado (G2-G3)' : 'Crítico (G4-G5)'
   const gicColor = testKp < 5 ? 'text-emerald-400' : testKp < 7 ? 'text-yellow-400' : 'text-red-400'
 
-  // Mensaje para compartir en WhatsApp
-  const shareText = encodeURIComponent(
-    `🚨 ¡Calculé el impacto solar en ${selectedRegion.name}! Con una tormenta Kp=${testKp}, el riesgo de GPS es de ±${gpsDriftMeters}m y probabilidad de auroras del ${auroraProbability}%. Haz tu diagnóstico en vivo en HELIOX (por Jesús Barrios): https://heliox-observatory.vercel.app`
-  )
+  // Texto del reporte para copiar y compartir
+  const reportText = `🚨 REPORTE DE IMPACTO SOLAR — HELIOX
+📍 Ubicación: ${selectedRegion.name}
+🛰️ Latitud Geomagnética: ${selectedRegion.geomagLat}°
+⚡ Nivel de Tormenta: Kp ${testKp} (Escala NOAA G${testKp >= 5 ? testKp - 4 : 0})
+🌌 Probabilidad de Auroras: ${auroraProbability}%
+📡 Desviación de Señal GPS: ±${gpsDriftMeters}m
+⚡ Riesgo en Red Eléctrica: ${gicRisk}
+🔗 Monitoreo en tiempo real por JESÚS BARRIOS: https://heliox-observatory.vercel.app`
+
+  const handleCopyReport = () => {
+    navigator.clipboard.writeText(reportText)
+    setCopiedReport(true)
+    setTimeout(() => setCopiedReport(false), 2500)
+  }
+
+  const shareWhatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`
+  const shareTwitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(reportText)}`
 
   return (
     <div className="solar-card p-6 sm:p-8 relative overflow-hidden my-10 border border-orange-500/30 bg-gradient-to-b from-orange-950/20 via-black to-black">
@@ -68,37 +83,37 @@ export default function SolarStormSimulator() {
           <p className="text-xs sm:text-sm text-white/60 mt-1 max-w-xl">
             {isEn
               ? 'Select your geographical region and test different Kp storm index levels to simulate GPS drift, power grid stress, and aurora visibility.'
-              : 'Selecciona tu región geográfica y desliza el nivel de tormenta Kp para simular la desviación del GPS, estrés en redes eléctricas y probabilidad de auroras.'}
+              : 'Selecciona tu región geográfica y elige el nivel de tormenta Kp (5 a 9) para simular la desviación del GPS, estrés en redes eléctricas y probabilidad de auroras.'}
           </p>
         </div>
       </div>
 
       {/* Controles Interactivos */}
       <div className="grid md:grid-cols-2 gap-6 relative z-10 mb-6">
-        {/* Selector de Región */}
+        {/* Selector de Región (Bogotá, CDMX, Madrid, Buenos Aires, Santiago, Miami...) */}
         <div className="space-y-2">
           <label className="text-xs font-mono text-white/70 uppercase block font-bold">
-            1. Selecciona tu Ubicación / Región:
+            1. Selecciona tu Ciudad / Región:
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {REGIONS.map((region) => (
               <button
                 key={region.name}
                 onClick={() => setSelectedRegion(region)}
-                className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center gap-2 ${
+                className={`p-3 rounded-xl border text-left text-xs transition-all flex items-center gap-2 active:scale-95 ${
                   selectedRegion.name === region.name
                     ? 'bg-orange-500 text-black font-bold border-orange-400 shadow-lg shadow-orange-500/25'
                     : 'bg-white/5 text-white/70 border-white/10 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <span className="text-lg">{region.flag}</span>
-                <span className="truncate">{region.name.split('/')[0]}</span>
+                <span className="truncate font-semibold">{region.name.split('/')[0].trim()}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Slider de Kp */}
+        {/* Selector y Botones de Nivel Kp (Kp 5 a Kp 9) */}
         <div className="space-y-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -108,6 +123,34 @@ export default function SolarStormSimulator() {
               <span className="text-2xl font-black font-mono text-orange-400">
                 Kp {testKp} {testKp >= 5 ? `(G${testKp - 4})` : '(G0)'}
               </span>
+            </div>
+
+            {/* Botones de Selección Rápida Kp 5 a Kp 9 */}
+            <div className="mb-3">
+              <span className="text-[11px] font-mono text-white/50 block mb-1.5 font-semibold">
+                Botones de Nivel Kp (Escala de Tormenta G1 a G5):
+              </span>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[5, 6, 7, 8, 9].map((kpVal) => {
+                  const isSelected = testKp === kpVal
+                  const gLevel = kpVal - 4
+                  return (
+                    <button
+                      key={kpVal}
+                      type="button"
+                      onClick={() => setTestKp(kpVal)}
+                      className={`py-2 px-1 rounded-xl text-xs font-mono font-bold border transition-all text-center flex flex-col items-center justify-center active:scale-95 ${
+                        isSelected
+                          ? 'bg-orange-500 text-black border-orange-400 shadow-lg shadow-orange-500/30'
+                          : 'bg-white/5 text-white/70 border-white/10 hover:text-white hover:bg-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <span>Kp {kpVal}</span>
+                      <span className="text-[10px] opacity-80">G{gLevel}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
             <input
@@ -184,20 +227,47 @@ export default function SolarStormSimulator() {
         </div>
       </div>
 
-      {/* Botón de Compartir Diagnóstico en WhatsApp */}
-      <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+      {/* Botones de Compartir y Copiar Reporte */}
+      <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
         <span className="text-xs text-white/60 text-center sm:text-left">
-          ¿Quieres compartir este diagnóstico simulado con tus amigos o en redes?
+          ¿Quieres compartir este diagnóstico con tus amigos o guardar el reporte?
         </span>
-        <a
-          href={`https://api.whatsapp.com/send?text=${shareText}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="py-2.5 px-5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center gap-2 shadow-lg shadow-emerald-600/30 font-mono shrink-0"
-        >
-          <span>💬</span>
-          <span>Compartir Diagnóstico en WhatsApp</span>
-        </a>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
+          {/* Botón WhatsApp */}
+          <a
+            href={shareWhatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 font-mono"
+            title="Compartir en WhatsApp"
+          >
+            <span>💬</span>
+            <span>WhatsApp</span>
+          </a>
+
+          {/* Botón X / Twitter */}
+          <a
+            href={shareTwitterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="py-2.5 px-4 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 active:scale-95 text-white border border-white/20 transition-all flex items-center gap-1.5 font-mono"
+            title="Compartir en X / Twitter"
+          >
+            <span>𝕏</span>
+            <span>Post en X</span>
+          </a>
+
+          {/* Botón Copiar Reporte con Toast */}
+          <button
+            type="button"
+            onClick={handleCopyReport}
+            className="py-2.5 px-4 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-400 active:scale-95 text-black transition-all flex items-center gap-1.5 shadow-lg shadow-orange-500/20 font-mono cursor-pointer"
+            title="Copiar reporte al portapapeles"
+          >
+            <span>{copiedReport ? '✅' : '📋'}</span>
+            <span>{copiedReport ? '¡Copiado al portapapeles!' : 'Copiar Reporte'}</span>
+          </button>
+        </div>
       </div>
     </div>
   )
