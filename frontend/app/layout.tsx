@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { I18nProvider } from '../lib/i18n'
+import VIPAlertBar from '../components/VIPAlertBar'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 
@@ -274,6 +275,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none z-[-1]" />
         <I18nProvider>
           {children}
+          <VIPAlertBar />
         </I18nProvider>
         <Analytics />
         <SpeedInsights />
